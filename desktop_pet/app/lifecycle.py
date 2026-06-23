@@ -19,7 +19,6 @@ from desktop_pet.pet import feeding
 from desktop_pet.pet.behavior import selector
 from desktop_pet.pet.control_panel import ControlPanel
 from desktop_pet.pet.entrance import next_entrance_kind
-from desktop_pet.proactive import proactive
 from desktop_pet.reminders import reminders
 from desktop_pet.skills import skills
 
@@ -79,10 +78,6 @@ class LifecycleMixin:
             except Exception:
                 return 0
 
-        try:
-            p_count, p_cap = proactive.today(datetime.now(), self._settings.proactive_level)
-        except Exception:
-            p_count, p_cap = 0, 0
         return {
             "shown": self._shown,
             "state": state,
@@ -92,8 +87,6 @@ class LifecycleMixin:
             "docs": _safe(docs.count),
             "journal": _safe(journal.count),
             "skills": _safe(skills.count),
-            "proactive_today": p_count,
-            "proactive_cap": p_cap,
             "model": self._settings.model,
             "configured": self._settings.is_configured,
         }
@@ -157,7 +150,6 @@ class LifecycleMixin:
         self._bring_online()
         emotion.apply("returned")
         selector.set_emotion(*emotion.snapshot())
-        self._just_returned = True
         self._drain_reminders()
 
     def _power_off(self) -> None:

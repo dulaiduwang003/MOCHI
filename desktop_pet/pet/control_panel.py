@@ -430,9 +430,6 @@ class ControlPanel(QDialog):
         self._autonomy.setCurrentData(settings.autonomy)
         self._think_level = _Segmented([(value, self._t(label_key)) for value, label_key in i18n.THINK_LEVEL_KEYS])
         self._think_level.setCurrentData(settings.think_level)
-        self._proactive_enabled = QCheckBox(self._t("cb_proactive"))
-        self._proactive_enabled.setChecked(settings.proactive_enabled)
-        self._proactive_enabled.setCursor(Qt.CursorShape.PointingHandCursor)
         self._weather_cb = QCheckBox(self._t("cb_weather"))
         self._weather_cb.setChecked(settings.weather_enabled)
         self._weather_cb.setCursor(Qt.CursorShape.PointingHandCursor)
@@ -451,8 +448,6 @@ class ControlPanel(QDialog):
         self._hear_dl_timer.timeout.connect(self._refresh_hear_status)
         self._hear_dl_timer.start(600)
         self._refresh_hear_status()
-        self._proactive_level = _Segmented([(value, self._t(label_key)) for value, label_key in i18n.PROACTIVE_LABEL_KEYS])
-        self._proactive_level.setCurrentData(settings.proactive_level)
         self._hk_summon = QKeySequenceEdit(QKeySequence(settings.hotkey_summon))
         self._hk_ask = QKeySequenceEdit(QKeySequence(settings.hotkey_ask))
         self._hk_quick = QKeySequenceEdit(QKeySequence(settings.hotkey_quick))
@@ -529,12 +524,10 @@ class ControlPanel(QDialog):
         self._home_state = QLabel("—", objectName="stBig")
         self._home_mood = QLabel("—")
         self._home_mem = QLabel("—")
-        self._home_proactive = QLabel("—")
         self._home_interface = QLabel("—")
         cl.addWidget(self._home_state)
         cl.addWidget(self._status_row(self._t("home_mood"), self._home_mood))
         cl.addWidget(self._status_row(self._t("home_memory"), self._home_mem))
-        cl.addWidget(self._status_row(self._t("home_proactive"), self._home_proactive))
         cl.addWidget(self._status_row(self._t("home_interface"), self._home_interface))
         body.addWidget(status_card)
 
@@ -574,8 +567,6 @@ class ControlPanel(QDialog):
         self._home_mem.setText(self._t("home_mem_fmt").format(
             exp=s.get("experiences", 0), docs=s.get("docs", 0),
             jr=s.get("journal", 0), sk=s.get("skills", 0)))
-        self._home_proactive.setText(self._t("home_proactive_fmt").format(
-            n=s.get("proactive_today", 0), cap=s.get("proactive_cap", 0)))
         model = s.get("model") or "—"
         cfg = self._t("home_configured") if s.get("configured") else self._t("home_unconfigured")
         self._home_interface.setText(f"{cfg} · {model}")
@@ -791,8 +782,6 @@ class ControlPanel(QDialog):
         body.addWidget(self._field("lbl_temp", temp_row, "help_temp"))
         body.addWidget(self._field("lbl_autonomy", self._autonomy, "help_autonomy"))
         body.addWidget(self._field("lbl_think_level", self._think_level, "help_think_level"))
-        body.addWidget(self._check_field(self._proactive_enabled, "help_proactive"))
-        body.addWidget(self._field("lbl_proactive_freq", self._proactive_level, "help_proactive_freq"))
         body.addWidget(self._check_field(self._weather_cb, "help_weather"))
         body.addStretch(1)
         return page
@@ -1127,8 +1116,6 @@ class ControlPanel(QDialog):
         s.autonomy = self._autonomy.currentData() or "正常"
         s.think_level = self._think_level.currentData() or "medium"
         s.enable_thinking, s.max_tokens = THINK_PRESETS[s.think_level]
-        s.proactive_enabled = self._proactive_enabled.isChecked()
-        s.proactive_level = self._proactive_level.currentData() or "正常"
         s.weather_enabled = self._weather_cb.isChecked()
         s.allow_web = self._allow_web.isChecked()
         s.allow_control = self._allow_control.isChecked()

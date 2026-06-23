@@ -16,7 +16,6 @@ from desktop_pet.audit import audit
 class AgentWorker(QObject):
 
     reply_ready = Signal(str)
-    proactive_reply = Signal(str)
     busy_changed = Signal(bool)
     task_finished = Signal(bool)
     step = Signal(str)
@@ -28,7 +27,6 @@ class AgentWorker(QObject):
     background_done = Signal(str, str)
     rewrite_ready = Signal(str)
     analysis_ready = Signal(str)
-    dream_ready = Signal(str)
 
     def __init__(self, agent: Agent) -> None:
         super().__init__()
@@ -114,41 +112,6 @@ class AgentWorker(QObject):
         finally:
             self.busy_changed.emit(False)
             self._running = False
-
-    @Slot(str, str)
-    def speak_spontaneously(self, mode: str, context: str) -> None:
-        try:
-            reply = self._agent.speak_spontaneously(mode, context)
-            if reply.strip():
-                self.proactive_reply.emit(reply)
-        except Exception as exc:
-            audit.system("speak_spontaneously failed", error=repr(exc))
-
-    @Slot(str)
-    def explore(self, topic: str) -> None:
-        # 慢活开daemon线程跑 不占worker事件循环 下面几个同理
-        def work() -> None:
-            try:
-                reply = self._agent.explore_topic(topic)
-            except Exception as exc:
-                audit.system("explore failed", error=repr(exc))
-                reply = ""
-            if reply and reply.strip():
-                self.proactive_reply.emit(reply)
-        threading.Thread(target=work, daemon=True, name="star-explore").start()
-
-    @Slot()
-    def make_dream(self) -> None:
-        # 睡着时后台揉一个梦 不出声 攒着回来再提
-        def work() -> None:
-            try:
-                text = self._agent.dream()
-            except Exception as exc:
-                audit.system("dream failed", error=repr(exc))
-                text = ""
-            if text and text.strip():
-                self.dream_ready.emit(text)
-        threading.Thread(target=work, daemon=True, name="star-dream").start()
 
     @Slot()
     def consolidate(self) -> None:

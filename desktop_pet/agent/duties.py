@@ -1,6 +1,6 @@
 # author: bdth
 # email: 2074055628@qq.com
-# 差事mixin 提醒 主动说话 改写 做梦 反思沉淀
+# 差事mixin 提醒 改写 反思沉淀
 
 from __future__ import annotations
 
@@ -76,29 +76,6 @@ class DutiesMixin:
         audit.reply(content, proactive=True)
         return content
 
-    def speak_spontaneously(self, mode: str, context: str = "") -> str:
-        """自己主动冒一句 憋不出返回空串"""
-        self._prepare()
-        nudge = prompts.spontaneous_nudge(mode)
-        if context.strip():
-            nudge = context.strip() + "\n" + nudge
-        # 拿当下情境当线索 让记忆召回聚焦此刻相关的事
-        messages = copy.deepcopy(self._messages) + [
-            {"role": "user", "content": self._turn_context(context or None) + "\n\n" + nudge}
-        ]
-        try:
-            resp = self._client().chat.completions.create(
-                model=self._settings.model, messages=messages, timeout=_BACKGROUND_TIMEOUT
-            )
-            self._meter_response(resp)
-            content = (resp.choices[0].message.content or "").strip()
-        except Exception:
-            return ""
-        content = _strip_think_leak(content)
-        if content:
-            audit.reply(content, proactive=True)
-        return content
-
     def rewrite_text(self, text: str) -> str:
         text = (text or "").strip()
         if not text:
@@ -116,30 +93,6 @@ class DutiesMixin:
         except Exception:
             return ""
         return _strip_think_leak(content)
-
-    def dream(self) -> str:
-        """睡着时把高显著记忆碎片揉成一个梦 材料不够或失败返回空串"""
-        frags = store.core_memories(3)
-        frags += [e for e in store.recent_experiences(5) if e not in frags]
-        frags += [str(it.get("text", "")) for it in journal.recent(4) if it.get("text")]
-        frags = [f for f in frags if f][:7]
-        if len(frags) < 2:
-            return ""  # 还没攒够记忆 做不了梦
-        fragments = "\n".join(f"- {f}" for f in frags)
-        try:
-            resp = self._client().chat.completions.create(
-                model=self._settings.model,
-                messages=[
-                    {"role": "system", "content": prompts.DREAM_SYSTEM},
-                    {"role": "user", "content": prompts.dream_nudge(fragments)},
-                ],
-                timeout=_BACKGROUND_TIMEOUT,
-            )
-            self._meter_response(resp)
-            text = _strip_think_leak((resp.choices[0].message.content or "").strip())
-        except Exception:
-            return ""
-        return text[:200]
 
     def consolidate_memory(self) -> int:
         """夜间记忆合并 成簇零碎经验各揉成一条高阶概括 返回揉成几条"""
@@ -163,16 +116,6 @@ class DutiesMixin:
         if not text or text.strip().upper().lstrip("[").startswith("NONE"):
             return ""  # 模型判定这几条没共同主题 不强揉
         return text[:300]
-
-    def explore_topic(self, topic: str) -> str:
-        from desktop_pet.agent.loop import Agent
-        worker = Agent(self._settings, depth=self._depth + 1)
-        try:
-            return worker.run(prompts.explore_nudge(topic))
-        except Exception:
-            return ""
-        finally:
-            worker.close()
 
     def analyze_screen(self, focus: str) -> str:
         """定时盯屏单次执行 截屏问模型"""

@@ -1,27 +1,19 @@
 # author: bdth
 # email: 2074055628@qq.com
-# 自主行为mixin 在场感知 提醒 远程信箱 主动搭话 看屏幕
+# 自主行为mixin 在场感知 提醒 远程信箱 定时看屏 窗台蹲守
 
 from __future__ import annotations
 
-import random
 import threading
 from datetime import datetime
 
 
-from desktop_pet import i18n, occasions, presence, stats
-from desktop_pet.emotion.state import emotion
-from desktop_pet.proactive import proactive
+from desktop_pet import i18n, presence
 from desktop_pet.reminders import reminders
 
 
 _AWAY_S = 150.0
 _AWAY_NIGHT_S = 75.0
-_PROACTIVE_RAPPORT_GATE = {"安静": 0.45, "正常": 0.30, "话痨": 0.15}
-_PROACTIVE_RAPPORT_GATE_DEFAULT = 0.30
-_HONEYMOON_GATE = 0.15  # 蜜月期把关系门槛压到地板 让新桌宠从第一天就开口
-_EXPLORE_CHANCE = 0.3
-_LONG_AWAY_S = 3 * 3600.0  # 离开超过这个时长 回来时热络一点
 
 
 class AutonomyMixin:
@@ -41,10 +33,8 @@ class AutonomyMixin:
         if presence.idle_seconds() >= away:
             if not self._pet.is_asleep:
                 self._pet.fall_asleep()
-                self._asleep_since = datetime.now()  # 记下睡着的时刻 回来时据此分级招呼
         elif self._pet.is_asleep and not self._pet.is_catnapping:
             self._wake()
-            self._just_returned = True
 
     def _check_reminders(self) -> None:
         try:
@@ -122,14 +112,10 @@ class AutonomyMixin:
     def _check_proactive(self) -> None:
         try:
             if self._meeting_mode:
-                return  # 开会不主动出声
+                return  # 开会不打扰
             if self._wellbeing.in_flow():
                 return  # 你在心流里 一切打扰都让路
-            if self._maybe_occasion():
-                return
-            if self._playtime.maybe_perch():
-                return
-            self._maybe_speak_up()
+            self._playtime.maybe_perch()
         except Exception:
             pass
 
@@ -172,96 +158,6 @@ class AutonomyMixin:
                 or self._pet.is_asleep or self._foreground_busy()):
             return
         self._on_reply(text)
-
-    def _maybe_occasion(self) -> bool:
-        if not self._settings.proactive_enabled:
-            return False
-        if self._engaged() or not self._pet.isVisible() or self._pet.is_asleep:
-            return False
-        if presence.idle_seconds() >= _AWAY_S:
-            return False
-        now = datetime.now()
-        if getattr(self, "_fired_date", None) != now.date():
-            # 跨天清掉去重集 节日键只有月日没年份 不清的话不重启时同一节日整个进程只触发一次
-            self._fired_date = now.date()
-            self._fired_occasions.clear()
-        key = occasions.today_key(now)
-        if not key or key in self._fired_occasions:
-            return False
-        self._fired_occasions.add(key)
-        ctx = (f"（{occasions.describe(key)}，用你自己的口吻、温暖自然地道一句应景的话，"
-               "别太正式、也别照念。）")
-        self._pet.perform("cheer")
-        self.request_proactive.emit("share_day", ctx)
-        return True
-
-    def _maybe_speak_up(self) -> None:
-        s = self._settings
-        if not s.proactive_enabled:
-            return
-        if (self._worker.is_running or self._busy or self._lecturing
-                or self._speech.is_speaking or self._input.isVisible()
-                or not self._pet.isVisible() or self._pet.is_asleep):
-            return
-        if presence.idle_seconds() >= _AWAY_S:
-            return
-        level = s.proactive_level
-        _val, _aro, rapport = emotion.snapshot()
-        gate = _PROACTIVE_RAPPORT_GATE.get(level, _PROACTIVE_RAPPORT_GATE_DEFAULT)
-        if stats.is_honeymoon():
-            gate = min(gate, _HONEYMOON_GATE)  # 新桌宠先靠在场挣关系 别先要关系才肯露面
-        if rapport < gate:
-            return
-        now = datetime.now()
-        context = self._proactive_context()
-        if self._just_returned:
-            if proactive.welcome_ready(now, level):
-                self._just_returned = False  # 只在真发出欢迎时才清标志
-                proactive.record(now, level)
-                dream = self._dreams.take_dream_hint()  # 睡着时做了梦就迷糊提一句
-                bits = [b for b in (context, self._away_note(now), dream) if b]
-                self.request_proactive.emit("welcome_back", "\n".join(bits))
-            # 还欠着欢迎但限流没到点 先不主动说别的 也别把标志白白清掉 等下次轮询再看
-            return
-        if not proactive.ready(now, level):
-            return
-        proactive.record(now, level)
-        if self._settings.allow_web and random.random() < _EXPLORE_CHANCE:
-            self.request_explore.emit(self._pick_explore_topic())
-        else:
-            self.request_proactive.emit(self._pick_proactive_mode(now), context)
-
-    @staticmethod
-    def _pick_explore_topic() -> str:
-        return random.choice((
-            "今天的天气", "最近的新鲜事 / 热搜", "一条有意思的冷知识",
-            "今天值得看的科技新闻", "一个冷门但有用的小技巧",
-        ))
-
-    @staticmethod
-    def _proactive_context() -> str:
-        title = presence.foreground_window_title()
-        if not title or len(title) > 120:
-            return ""
-        return f"（此刻 ta 正在用的窗口是：「{title}」——可作为你搭话的由头，但别照念窗口标题。）"
-
-    def _away_note(self, now: datetime) -> str:
-        """据离开时长给回来招呼分级 短暂离开不加料 久别跨天才热络"""
-        since = getattr(self, "_asleep_since", None)
-        if since is None:
-            return ""
-        if now.date() != since.date():
-            return "（ta 跨了一天才回来——像久违重逢那样热络一点，但仍只一句话。）"
-        gone = (now - since).total_seconds()
-        if gone >= _LONG_AWAY_S:
-            return f"（ta 离开了大约 {int(gone // 3600)} 个小时才回来——可以说得更想它/想念一点，别夸张，一句话。）"
-        return ""
-
-    @staticmethod
-    def _pick_proactive_mode(now: datetime) -> str:
-        if (now.hour >= 23 or now.hour < 5) and random.random() < 0.7:
-            return "late_care"
-        return random.choice(("check_in", "follow_up", "share_day", "thought"))
 
     @staticmethod
     def _is_night() -> bool:

@@ -5,7 +5,6 @@
 from __future__ import annotations
 
 import random
-from datetime import datetime
 
 from PySide6.QtGui import QCursor
 
@@ -14,7 +13,6 @@ from desktop_pet.app.textflow import _parse_emotion, _split_sentences
 from desktop_pet.emotion.state import appraise_user_message, emotion
 from desktop_pet.pet.behavior import selector
 from desktop_pet.pet.blackboard import parse_segments
-from desktop_pet.proactive import proactive
 
 
 _CELEBRATE_CHANCE = 0.25
@@ -35,15 +33,8 @@ class AgentBridgeMixin:
         self._wake()
         self._pet.yield_performance()  # 点名演出让位 新消息要摆思考姿势
         self._todo.dismiss()
-        self._just_returned = False
         stats.bump_interactions()
-        proactive.defer(datetime.now(), self._settings.proactive_level)
         self._input.fade_out()
-
-    def _on_proactive_reply(self, raw: str) -> None:
-        if not self._shown or self._foreground_busy() or self._lecturing:
-            return  # 关机隐藏时即便有在途的主动回复返回也不弹气泡
-        self._on_reply(raw)
 
     def _on_reply(self, raw: str) -> None:
         if not self._shown:

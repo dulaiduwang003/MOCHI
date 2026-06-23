@@ -53,10 +53,7 @@ class PetApp(QuickActionsMixin, VoiceMixin, AgentBridgeMixin,
     request_reminder = Signal(str)
     request_task = Signal(str)
     request_timed_task = Signal(str)
-    request_proactive = Signal(str, str)
-    request_explore = Signal(str)
     request_analyze = Signal(str)
-    request_dream = Signal()
     request_consolidate = Signal()
     request_message = Signal(str)
     request_confirm = Signal(str)
@@ -87,7 +84,6 @@ class PetApp(QuickActionsMixin, VoiceMixin, AgentBridgeMixin,
         self._panel = None
         self._relang = False
         self._relang_intro = None
-        self._fired_occasions: set[str] = set()
         self._watch_inflight = False
         self._cancelling = False
         self._pending_quit = False
@@ -151,7 +147,6 @@ class PetApp(QuickActionsMixin, VoiceMixin, AgentBridgeMixin,
         self._watch_timer = QTimer(self)
         self._watch_timer.timeout.connect(self._check_watch)
         self._meeting_mode = False
-        self._just_returned = False
 
         self._feeding = FeedingCtrl(self)
         self._sensors = Sensors(self)
@@ -219,7 +214,6 @@ class PetApp(QuickActionsMixin, VoiceMixin, AgentBridgeMixin,
         self._hear_submit.connect(self._on_submit)
         self._hear_tick.connect(self._on_hear_tick)
         self._worker.reply_ready.connect(self._on_reply)
-        self._worker.proactive_reply.connect(self._on_proactive_reply)
         self._worker.busy_changed.connect(self._on_busy)
         self._worker.task_finished.connect(self._on_task_finished)
         self._worker.step.connect(self._on_step)
@@ -232,11 +226,7 @@ class PetApp(QuickActionsMixin, VoiceMixin, AgentBridgeMixin,
         self.request_reminder.connect(self._worker.deliver_reminder)
         self.request_task.connect(self._worker.run_task)
         self.request_timed_task.connect(self._worker.run_timed_task)
-        self.request_proactive.connect(self._worker.speak_spontaneously)
-        self.request_explore.connect(self._worker.explore)
-        self.request_dream.connect(self._worker.make_dream)
         self.request_consolidate.connect(self._worker.consolidate)
-        self._worker.dream_ready.connect(self._dreams.set_dream)
         self.request_analyze.connect(self._worker.analyze_screen)
         self.request_message.connect(self._worker.handle)
         self._worker.analysis_ready.connect(self._on_analysis)

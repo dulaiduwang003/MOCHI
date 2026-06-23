@@ -118,8 +118,6 @@ class Settings:
     autonomy: str = "正常"
     enable_thinking: bool = True
     think_level: str = "medium"
-    proactive_enabled: bool = True
-    proactive_level: str = "正常"
     ui_language: str = "中文"
     weather_enabled: bool = False  # 天气拟态默认关 ip定位常离谱
     quick_paste_back: bool = True

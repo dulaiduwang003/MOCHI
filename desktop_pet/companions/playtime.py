@@ -159,7 +159,7 @@ class Playtime(QObject):
 
     def maybe_perch(self) -> bool:
         """偶尔跳上前台窗口顶上待着 窗口一动摔下来"""
-        if not self._host._settings.proactive_enabled or self._host._meeting_mode or self._perch_hwnd:
+        if self._host._meeting_mode or self._perch_hwnd:
             return False
         if self._host._engaged() or not self._host._pet.isVisible() or self._host._pet.is_asleep:
             return False
@@ -224,8 +224,6 @@ class Playtime(QObject):
     def _check_bugs(self) -> None:
         """定时扫temp 垃圾堆大了生一只虫"""
         if self._bug is not None or self._bug_scanning:
-            return
-        if not self._host._settings.proactive_enabled:
             return
         if self._host._engaged() or not self._host._pet.isVisible() or self._host._pet.is_asleep:
             return

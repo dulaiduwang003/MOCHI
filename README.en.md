@@ -33,7 +33,7 @@
 
 Star is two things at once:
 
-- 🐾 **A desktop pet with a life of its own** — drawn entirely in code (no sprite assets whatsoever). It blinks, follows your cursor with its eyes, daydreams and hums, goes fishing and sips coffee, plays catch; it fans itself when the machine runs hot, puts up an umbrella in the rain, hunts down garbage bugs when junk piles up, eats files you drop on it, and brings out a cake on anniversaries. Ignore it and it finds its own fun; leave and it dozes off; now and then it strikes up a conversation on its own.
+- 🐾 **A desktop pet with a life of its own** — drawn entirely in code (no sprite assets whatsoever). It blinks, follows your cursor with its eyes, daydreams and hums, goes fishing and sips coffee, plays catch; it fans itself when the machine runs hot, puts up an umbrella in the rain, hunts down garbage bugs when junk piles up, eats files you drop on it, and brings out a cake on anniversaries. Ignore it and it finds its own fun; leave and it dozes off.
 - 🧠 **A local Agent that can drive your whole computer** — plug in your own LLM (any OpenAI-compatible endpoint) and it can see the screen, click windows, move the mouse and keyboard, run commands, write code, read and write files, search the web, remember things, and look stuff up; it can also **watch your screen on a timer, run tests after it edits code, fan out a team of sub-agents in parallel, and remind you on a daily/weekly schedule**… turning "chatting with an AI" into "having the AI do it for you."
 
 It carries persistent **emotions and rapport**, and slowly grows a **self-portrait (personality evolution)** as you spend time together — so it's "the same one," not a chat box that resets every time.
@@ -83,9 +83,8 @@ Star acts on your machine with **the same privileges you have** — running arbi
 | **Prop-Based Skits** | Drinking coffee, fishing, cracking cases, reading, listening to music, gaming, stargazing, a void-leap, a shadow-clone act, catching a meteor, planting a flower, playing with a yarn ball — 12 in all, each a multi-stage little play |
 | **One-Shot Actions** | Dancing, cheering, spinning… each with fitting effects (confetti / musical notes / afterimages) |
 | **Presence Awareness** | It dozes off when you leave and wakes when you return; drag it to a screen edge and it tucks itself away, peeking out from a little corner; once in a while it "wormholes," teleporting and popping out from somewhere else on the screen |
-| **Holidays & Anniversaries** | It recognizes Gregorian holidays (New Year's, Valentine's, April Fools', Children's Day, Halloween, Christmas Eve, Christmas, New Year's Eve) and your birthday, and brings them up naturally on the day |
+| **Holidays & Anniversaries** | It recognizes Gregorian holidays (New Year's, Valentine's, April Fools', Children's Day, Halloween, Christmas Eve, Christmas, New Year's Eve) and your birthday — footprints turn to petals / snowflakes in season, and a cake comes out at 7 / 30 / 100 / 365 days together |
 | **Time Together** | It quietly remembers the date you first met and the cumulative interaction count — so it knows "how many days we've known each other" |
-| **Talking First** | Occasionally speaks up on its own when idle, yet **with restraint** — long cooldowns, a daily cap, and rapport gating mean it never spams |
 | **Structured Expression** | It draws comparisons / lists / code on a little blackboard beside it to explain things; multi-step tasks get a **persistent task-list panel** (independent of the blackboard, never wiped by reply content); it can also display images / GIFs |
 | **Machine Mimicry** | It senses the machine's state and its body follows: fans itself when the CPU runs hot, gets squished when RAM is maxed, warns you on low battery, tucks under a blanket and yawns late at night, snuggles up to a warm machine in winter; when the machine truly goes idle it pulls out a yarn ball to play |
 | **Weather Mimicry** | Quietly checks the weather every two hours: umbrella in the rain, curls up in the snow, melting in a heatwave — whatever it's like outside is what it's like on it |
@@ -99,7 +98,7 @@ Star acts on your machine with **the same privileges you have** — running arbi
 ### ⌨️ Handy Interaction
 
 - **Global Hotkeys**: `Ctrl + Alt + S` summons the input box anywhere; `Ctrl + Alt + A` asks it about selected text directly; `Ctrl + Shift + Q` rewrites selected text in place ("quick rewrite," auto-replacing it)
-- **Control Panel**: configure the endpoint / model parameters / reply language / capability toggles / proactive frequency (Quiet · Normal · Chatty) / one-click "wipe memory, like a newborn"
+- **Control Panel**: configure the endpoint / model parameters / reply language / capability toggles / one-click "wipe memory, like a newborn"
 
 ---
 
@@ -109,7 +108,7 @@ Star acts on your machine with **the same privileges you have** — running arbi
 
 ```text
 desktop_pet/
-├─ app.py            # Conductor: wires UI / agent / timers / tray / hotkeys, live-gates proactive messages
+├─ app.py            # Conductor: wires UI / agent / timers / tray / hotkeys
 ├─ agent/            # The brain
 │   ├─ loop.py       #   Agent loop: model↔tool feedback, streaming, trimming, reflection, personality evolution, sub-agent orchestration
 │   ├─ tools.py      #   Tool table (63 tools) with dispatch, concurrency-safe locks
@@ -131,8 +130,8 @@ desktop_pet/
 ├─ executor/         # Commands / Python / files / network / vision (OCR · matching) / system memory / dev tools (diff · tests) / safety guardrails
 ├─ hands/            # Mouse / keyboard / window control / ghost mouse (ghost — background PostMessage clicks without moving the real cursor)
 ├─ eyes/             # Screenshots + accessibility tree (UIA) + on-screen image matching
-├─ docs.py · reminders.py · proactive.py · journal.py · presence.py
-├─ occasions.py      # Holiday / birthday awareness: hands the model a fitting "hook" on special days
+├─ docs.py · reminders.py · journal.py · presence.py
+├─ occasions.py      # Holiday / birthday recognition: used e.g. for seasonal footprint colors
 ├─ stats.py          # Lightweight companionship stats: first-met time + cumulative interactions
 ├─ watcher.py        # Scheduled screen-watching (session-level, e.g. watch your game)
 ├─ usage.py          # Token usage metering: cumulative input / output / cache hits, persisted per day
@@ -213,13 +212,12 @@ A continuous valence / arousal mood + slowly accumulating rapport, persisted to 
 
 - **Eyes / Hands / Screenshots**: screenshots use `SetWindowDisplayAffinity` to mark the pet window as "visible to the user, invisible to screen capture"; it prefers reading control names + exact coordinates from the UIAutomation accessibility tree to click directly, falling back to screenshot image matching only when it can't; Chinese input goes through the clipboard + Ctrl+V.
 - **Presence awareness**: it uses the Win32 global last-input time to tell whether you're around, dozing off after a long stretch of no input (a shorter threshold late at night) and waking the moment you move.
-- **Proactive messages**: `proactive.py` manages cooldown / daily-cap tiers (Quiet / Normal / Chatty), `app.py` polls every 60s and only speaks once all gates pass (not busy / present / rapport met / cooldown elapsed); welcome-back greetings have a minimum interval and never interrupt mid-chat.
 - **Memory / knowledge base / episodic journal**: three independently persisted stores — memory is "what it learned about you," the knowledge base is "external documents you fed it (RAG)," the episodic journal is "what it did recently," strictly separated.
 - **Reminders / scheduling**: `say` (speaks in its own voice at the appointed time) / `do` (actually does the work in the background and reports back), with **daily / weekly / every-X-minute** recurrence (persistent across restarts; missed-while-off only delivers the most recent occurrence, no flooding); `list_reminders` / `cancel_reminder` to manage them; when Star is hidden or behind a fullscreen game, delivery falls back to a **system tray notification**. All goes through a persisted scheduler, never letting the model sleep to wait out time itself.
 - **Scheduled screen-watching**: `watcher.py` — on the interval you set, it screenshots the active window, analyzes it against the focus you gave (e.g. your game situation) and reports; session-level (not persisted, ends on restart), and on result it re-checks state so it won't intrude after power-off / stop / mid-conversation, and won't burn a cycle on a transient capture failure.
 - **Engineering discipline**: `executor/devtools.py` provides `review_diff` (view the uncommitted diff, scopable to a file/subdir) / `run_tests` (auto-detect pytest · npm, own 5-min timeout, kills the whole process tree on timeout); the system prompt has a "when working in a code repo" section — look before you leap, small surgical edits, **run tests / self-check the diff after editing**, branch first on a default branch, confirm before irreversible git.
 - **Hiding / entrance**: dragged to a screen edge it shrinks into a corner and occasionally peeks out; every launch picks a random entrance animation and never repeats the previous one; once in a while it "wormholes" — cracking open a wormhole in place, spinning inward, teleporting while the window is invisible, and popping out elsewhere on the screen.
-- **Holidays / companionship**: `occasions.py` recognizes Gregorian holidays + the birthday you set and, on the day, gives the model a fitting "hook" so it brings them up naturally rather than offering a canned greeting; `stats.py` quietly tracks first-meeting time and cumulative interactions — the basis for "how long we've known each other."
+- **Holidays / companionship**: `occasions.py` recognizes Gregorian holidays + the birthday you set (used e.g. for seasonal footprint colors); `stats.py` quietly tracks first-meeting time and cumulative interactions — the basis for "how long we've known each other."
 - **Companion behaviors (companions/)**: five "little machines," each minding its own patch, all wrapped in presence / busy / rapport / cooldown gating —
   - `sensors.py`: reads CPU / RAM / battery vitals every 10s (with hysteresis, no jitter), driving **machine mimicry** (fan when hot, squished RAM, low battery, late-night blanket, winter snuggle); checks mic usage for **meeting-mute**; queries `wttr.in` every two hours for **weather mimicry**; watches the Downloads folder and desktop icon count; covers its eyes when the focused field is a password box.
   - `playtime.py`: play & physical feedback — throw/catch ball, windowsill perch (tumbles when the window moves), tickle / drag-throw grudge, **ink footprints** while walking, a fishing-catch easter egg; scans temp and spawns a **garbage bug** past 500MB, squishing it triggers a real cleanup.

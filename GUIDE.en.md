@@ -27,7 +27,7 @@ On first launch the control panel pops up — just fill in your LLM configuratio
 - **API Key** / **Endpoint (base_url)** — any **OpenAI-compatible** service (Qwen / DeepSeek / OpenAI / local vLLM, Ollama…)
 - **Chat Model** — the chat model used for the main turn
 - **Embedding Model** — used for semantic retrieval in the knowledge base and memory (optional; without an embedding endpoint it automatically degrades to substring retrieval)
-- **Reply Language / Capability Toggles / Proactive Frequency / Temperature & Max Length / Whether to Show Chain-of-Thought** — all adjustable in the panel, taking effect live every turn
+- **Reply Language / Capability Toggles / Temperature & Max Length / Whether to Show Chain-of-Thought** — all adjustable in the panel, taking effect live every turn
 
 Once configured, Star makes its "entrance" from a corner of the screen. Click it (or press `Ctrl + Alt + S`) to type and chat; the tray icon reopens the panel anytime.
 
@@ -92,13 +92,12 @@ The safety guardrail has unit tests (`tests/test_safety.py`, run with `uv run --
 2. The **control panel** (Endpoint / Chat / Permissions / About — four pages);
 3. The **audit log** `data/logs/audit-YYYYMMDD.jsonl` (use `Get-Content` to view the latest lines).
 
-Walkthrough coverage: basic conversation and expressions, command actions (perform / skits), idle behavior, interruption, proactive messages, holiday / birthday awareness and companionship stats, memory and episodic journal, global hotkeys (incl. quick rewrite), clipboard and windows, control panel, reminders and scheduling (incl. recurrence / system notifications), scheduled screen-watching, task-list panel, sub-agent orchestration, thinking animation, blackboard and images, reflection gating; plus companion behaviors: feeding (drag files / protected-path blocking / docs into the knowledge base), squishing garbage bugs for a real cleanup, play (throw ball / windowsill perch / tickle / ink footprints), machine & weather mimicry, meeting-mute, rituals (morning forecast / anniversary cake / Pomodoro / goodbye wave), background-task watching, body-sensation injection.
+Walkthrough coverage: basic conversation and expressions, command actions (perform / skits), idle behavior, interruption, holiday / birthday awareness and companionship stats, memory and episodic journal, global hotkeys (incl. quick rewrite), clipboard and windows, control panel, reminders and scheduling (incl. recurrence / system notifications), scheduled screen-watching, task-list panel, sub-agent orchestration, thinking animation, blackboard and images, reflection gating; plus companion behaviors: feeding (drag files / protected-path blocking / docs into the knowledge base), squishing garbage bugs for a real cleanup, play (throw ball / windowsill perch / tickle / ink footprints), machine & weather mimicry, meeting-mute, rituals (morning forecast / anniversary cake / Pomodoro / goodbye wave), background-task watching, body-sensation injection.
 
 **Common Troubleshooting**:
 
 - **Wrong reply language** → the "reply language" box on the control panel's "Chat" page (empty = follow the language you speak).
 - **Certain capabilities "can't be done"** → the corresponding capability group is turned off on the "Permissions" page (Internet / Control / Commands); the tools are hidden from the model's tool table — this is expected.
-- **Proactive messages don't appear** → it's restrained: requires present + not busy + rapport met + cooldown elapsed; to verify quickly set the proactive frequency to "Chatty," but it's still not instant.
 - **Startup says "couldn't grab hotkey"** → `Ctrl+Alt+S` is taken by another program; you can still chat by clicking the pet.
 - **No reflection model call should happen after pure small talk** (short chats skip reflection); only substantive tasks that used tools trigger reflection and may update memory / journal / self-portrait.
 
@@ -123,12 +122,11 @@ Everything lives in `data/` (in-project during development, moved to `%APPDATA%\
 
 | File | Content |
 | --- | --- |
-| `settings.json` | Endpoint / model / language / capability toggles / proactive frequency |
+| `settings.json` | Endpoint / model / language / capability toggles |
 | `emotion.json` | valence / arousal / rapport + timestamp |
 | `persona.json` | Self-portrait (personality evolution layer) |
 | `stats.json` | Companionship stats: first-met time + cumulative interaction count + amount fed / late-night days / per-ritual dedup markers |
 | `usage.json` | Token usage metering (per-day cumulative input / output / cache hits) |
-| `proactive.json` | Cooldown / count state for proactive messages |
 | `reminders.json` | Pending reminders / scheduled tasks (incl. recurrence rule) |
 | `journal.json` | Episodic journal (the most recent entries) |
 | `last_entrance.txt` | Last entrance-animation type (so the next launch doesn't repeat the same one) |
