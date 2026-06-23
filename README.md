@@ -12,7 +12,7 @@
 
 **简体中文** · [English](README.en.md) · [日本語](README.ja.md)
 
-🔗 [github.com/dulaiduwang003/MOCHI](https://github.com/dulaiduwang003/MOCHI)
+🔗 [github.com/dulaiduwang003/star-agent](https://github.com/dulaiduwang003/star-agent)
 
 </div>
 
@@ -262,7 +262,7 @@ desktop_pet/
 
 <div align="center">
 
-**作者**：bdth · ✉️ [2074055628@qq.com](mailto:2074055628@qq.com) · [GitHub](https://github.com/dulaiduwang003/MOCHI)
+**作者**：bdth · ✉️ [2074055628@qq.com](mailto:2074055628@qq.com) · [GitHub](https://github.com/dulaiduwang003/star-agent)
 
 说白了，这就是我**闲来无事、纯凭兴趣写着玩**的一个小东西——没什么宏大目标，就是想看看能不能把"和 AI 对话"做成"桌上养着一只会帮你干活的小生物"。代码里那些较真的细节，都是写的时候自己觉得有意思才折腾的。你要是也觉得好玩，随便拿去用、去改。
 

@@ -16,7 +16,7 @@ HEAR_DIR = DATA_DIR / "hearing"
 _SR = 16000
 _CHUNK = 1600  # 100ms
 
-_DL_BASE = "https://github.com/dulaiduwang003/MOCHI/releases/download/models"
+_DL_BASE = "https://github.com/dulaiduwang003/star-agent/releases/download/models"
 _FILES = {  # 键是短名 值是release文件名和进度权重
     "sv_model": ("hear-sv-model.int8.onnx", 0.90),
     "sv_tokens": ("hear-sv-tokens.txt", 0.01),

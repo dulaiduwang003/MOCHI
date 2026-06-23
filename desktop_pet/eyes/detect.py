@@ -10,7 +10,7 @@ from pathlib import Path
 from desktop_pet.settings import DATA_DIR
 
 
-_MODEL_URL = "https://github.com/dulaiduwang003/MOCHI/releases/download/models/ui_detect.onnx"
+_MODEL_URL = "https://github.com/dulaiduwang003/star-agent/releases/download/models/ui_detect.onnx"
 
 
 def _data_model() -> Path:

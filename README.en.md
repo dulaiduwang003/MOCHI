@@ -13,7 +13,7 @@
 
 [简体中文](README.md) · **English** · [日本語](README.ja.md)
 
-🔗 [github.com/dulaiduwang003/MOCHI](https://github.com/dulaiduwang003/MOCHI)
+🔗 [github.com/dulaiduwang003/star-agent](https://github.com/dulaiduwang003/star-agent)
 
 </div>
 
@@ -264,7 +264,7 @@ Purely optional — affects nothing. Just a treat for the little pet.
 
 <div align="center">
 
-**Author**: bdth · ✉️ [2074055628@qq.com](mailto:2074055628@qq.com) · [GitHub](https://github.com/dulaiduwang003/MOCHI)
+**Author**: bdth · ✉️ [2074055628@qq.com](mailto:2074055628@qq.com) · [GitHub](https://github.com/dulaiduwang003/star-agent)
 
 Honestly, this is just a little thing I built **for fun in my spare time** — no grand plan, I just wanted to see whether "chatting with an AI" could become "keeping a little creature on your desk that actually does things for you." The parts where the code gets meticulous are simply the bits I found interesting enough to fuss over. If you find it fun too, take it and tweak it however you like.
 

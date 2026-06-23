@@ -7,7 +7,7 @@ from __future__ import annotations
 from desktop_pet import __version__
 from desktop_pet.settings import build_http_client
 
-REPO = "dulaiduwang003/MOCHI"
+REPO = "dulaiduwang003/star-agent"
 _API = f"https://api.github.com/repos/{REPO}/releases/latest"
 RELEASES_PAGE = f"https://github.com/{REPO}/releases/latest"
 

@@ -957,7 +957,7 @@ class ControlPanel(QDialog):
         col.addSpacing(8)
         col.addWidget(label(self._t("about_made_by"), "aboutAuthor"))
         col.addWidget(label(self._t("about_meta"), "aboutMeta"))
-        gh = QLabel(f'<a href="https://github.com/dulaiduwang003/MOCHI" style="color: {_ACCENT}; text-decoration: none;">GitHub · dulaiduwang003/MOCHI</a>')
+        gh = QLabel(f'<a href="https://github.com/dulaiduwang003/star-agent" style="color: {_ACCENT}; text-decoration: none;">GitHub · dulaiduwang003/star-agent</a>')
         gh.setObjectName("aboutMeta")
         gh.setAlignment(Qt.AlignmentFlag.AlignCenter)
         gh.setOpenExternalLinks(True)

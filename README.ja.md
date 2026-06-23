@@ -13,7 +13,7 @@
 
 [简体中文](README.md) · [English](README.en.md) · **日本語**
 
-🔗 [github.com/dulaiduwang003/MOCHI](https://github.com/dulaiduwang003/MOCHI)
+🔗 [github.com/dulaiduwang003/star-agent](https://github.com/dulaiduwang003/star-agent)
 
 </div>
 
@@ -264,7 +264,7 @@ desktop_pet/
 
 <div align="center">
 
-**作者**：bdth · ✉️ [2074055628@qq.com](mailto:2074055628@qq.com) · [GitHub](https://github.com/dulaiduwang003/MOCHI)
+**作者**：bdth · ✉️ [2074055628@qq.com](mailto:2074055628@qq.com) · [GitHub](https://github.com/dulaiduwang003/star-agent)
 
 正直に言うと、これは**暇つぶしに趣味で作った**ちょっとしたものです——大層な目標はなく、ただ「AI と会話する」を「机の上で、実際に手伝ってくれる小さな生き物を飼う」に変えられないか試してみたかっただけ。コードで細かくこだわっている所は、作っていて面白いと思って弄っただけです。面白そうと思ったら、自由に使って改造してください。
 
