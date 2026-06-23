@@ -35,7 +35,7 @@ from desktop_pet import __version__, i18n, updater
 from desktop_pet.docs import docs
 from desktop_pet.eyes import detect
 from desktop_pet.i18n import UI_LANGUAGES
-from desktop_pet.pet.icon import mochi_icon
+from desktop_pet.pet.icon import star_icon
 from desktop_pet.settings import Settings, THINK_PRESETS
 
 _ACCENT = "#7c6cff"
@@ -223,7 +223,7 @@ class ControlPanel(QDialog):
         self.finished.connect(self._stop_polling)  # 关面板停掉轮询定时器 别让隐藏的死面板还在后台每 0.6/1.5s 查库
         self._lang = settings.ui_language if settings.ui_language in UI_LANGUAGES else "中文"
         self.setWindowTitle(self._t("panel_title"))
-        self.setWindowIcon(mochi_icon())
+        self.setWindowIcon(star_icon())
 
         card = QFrame(objectName="card")
         card.setStyleSheet(_STYLE)
@@ -257,9 +257,9 @@ class ControlPanel(QDialog):
         side.setContentsMargins(14, 22, 14, 16)
         side.setSpacing(4)
         avatar = QLabel()
-        avatar.setPixmap(mochi_icon().pixmap(QSize(46, 46)))
+        avatar.setPixmap(star_icon().pixmap(QSize(46, 46)))
         avatar.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        brand = QLabel("Mochi", objectName="brand")
+        brand = QLabel("Star", objectName="brand")
         brand.setAlignment(Qt.AlignmentFlag.AlignCenter)
         brand_sub = QLabel("もち · 麻薯", objectName="brandSub")
         brand_sub.setAlignment(Qt.AlignmentFlag.AlignCenter)
@@ -940,7 +940,7 @@ class ControlPanel(QDialog):
         col.setContentsMargins(22, 10, 22, 8)
         col.setSpacing(7)
         col.addStretch(1)
-        col.addWidget(label("Mochi", "aboutName"))
+        col.addWidget(label("Star", "aboutName"))
         col.addWidget(label("もち · 麻薯", "aboutGloss"))
         col.addWidget(label(f"v{__version__}", "aboutMeta"))
         col.addSpacing(6)
@@ -1014,7 +1014,7 @@ class ControlPanel(QDialog):
             )
             self._gui_model_done.emit(res)
 
-        threading.Thread(target=work, daemon=True, name="mochi-gui-model").start()
+        threading.Thread(target=work, daemon=True, name="star-gui-model").start()
 
     def _render_gui_model(self, res: str) -> None:
         self._gui_downloading = False
@@ -1040,7 +1040,7 @@ class ControlPanel(QDialog):
                 result = {"status": "error", "error": str(exc)}
             self._update_checked.emit(result)
 
-        threading.Thread(target=work, daemon=True, name="mochi-update-check-panel").start()
+        threading.Thread(target=work, daemon=True, name="star-update-check-panel").start()
 
     def _render_update(self, result: object) -> None:
         self._check_btn.setEnabled(True)

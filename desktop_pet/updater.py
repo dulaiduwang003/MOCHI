@@ -40,7 +40,7 @@ def check_latest(proxy: str = "") -> dict:
         try:
             resp = client.get(
                 _API,
-                headers={"Accept": "application/vnd.github+json", "User-Agent": "Mochi-Updater"},
+                headers={"Accept": "application/vnd.github+json", "User-Agent": "Star-Updater"},
             )
             resp.raise_for_status()
             data = resp.json()

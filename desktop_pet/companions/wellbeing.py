@@ -89,7 +89,7 @@ class Wellbeing(QObject):
             self._cat = ""
             return
         self._busy = True
-        threading.Thread(target=self._probe, daemon=True, name="mochi-wellbeing").start()
+        threading.Thread(target=self._probe, daemon=True, name="star-wellbeing").start()
 
     def _probe(self) -> None:
         """daemon线程读前台窗口标题和空闲时长 会阻塞绝不能在UI线程做"""

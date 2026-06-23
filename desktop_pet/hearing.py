@@ -1,7 +1,7 @@
 # author: bdth
 # email: 2074055628@qq.com
 # 听觉 sensevoice本地识别 全程离线
-# 两种入口 按住热键说话松开发送 唤醒词墨池说完静音自动发送
+# 两种入口 按住热键说话松开发送 唤醒词斯塔说完静音自动发送
 # 模型按需下载 没下载就完全沉默
 
 from __future__ import annotations
@@ -28,7 +28,7 @@ _FILES = {  # 键是短名 值是release文件名和进度权重
 }
 DOWNLOAD_SIZE_HINT = "250MB"
 
-_WAKE_KEYWORD = "m ò ch í @墨池"
+_WAKE_KEYWORD = "s ī t ǎ @斯塔"
 _TALK_CAP_S = 10.0     # 单次说话硬上限 浮条带倒计时
 _WAKE_IDLE_S = 6.0     # 唤醒后一直没人说话就收回
 _PARTIAL_EVERY = 0.6   # 部分识别刷新间隔
@@ -107,7 +107,7 @@ def start_download(proxy: str = "") -> None:
         with _dl_lock:
             _dl_state.update(state="idle", pct=0.0)
         return
-    threading.Thread(target=_download, args=(proxy,), daemon=True, name="mochi-hear-dl").start()
+    threading.Thread(target=_download, args=(proxy,), daemon=True, name="star-hear-dl").start()
 
 
 def _download(proxy: str) -> None:
@@ -189,7 +189,7 @@ def _warmup_async() -> None:
         finally:
             _warming = False
 
-    threading.Thread(target=_go, daemon=True, name="mochi-hear-warmup").start()
+    threading.Thread(target=_go, daemon=True, name="star-hear-warmup").start()
 
 
 def start_talk() -> None:
@@ -213,7 +213,7 @@ def _kick() -> None:
     with _lock:
         if _loop_thread is not None and _loop_thread.is_alive():
             return
-        _loop_thread = threading.Thread(target=_loop, daemon=True, name="mochi-hearing")
+        _loop_thread = threading.Thread(target=_loop, daemon=True, name="star-hearing")
         _loop_thread.start()
 
 

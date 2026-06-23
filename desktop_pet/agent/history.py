@@ -85,7 +85,7 @@ class HistoryMixin:
                 return  # worker还在 队列它会接着消化
             self._compress_busy = True
         try:
-            threading.Thread(target=self._compress_worker, daemon=True, name="mochi-compress").start()
+            threading.Thread(target=self._compress_worker, daemon=True, name="star-compress").start()
         except RuntimeError:
             # 起不了线程就退回同步做 别把被裁内容丢了
             with self._compress_lock:
@@ -265,7 +265,7 @@ class HistoryMixin:
             if not path:
                 continue
             try:
-                threading.Thread(target=self._safe_ingest, args=(path,), daemon=True, name="mochi-ingest").start()
+                threading.Thread(target=self._safe_ingest, args=(path,), daemon=True, name="star-ingest").start()
             except RuntimeError:
                 pass
             text = read_file_text(path)

@@ -135,7 +135,7 @@ class AgentWorker(QObject):
                 reply = ""
             if reply and reply.strip():
                 self.proactive_reply.emit(reply)
-        threading.Thread(target=work, daemon=True, name="mochi-explore").start()
+        threading.Thread(target=work, daemon=True, name="star-explore").start()
 
     @Slot()
     def make_dream(self) -> None:
@@ -148,7 +148,7 @@ class AgentWorker(QObject):
                 text = ""
             if text and text.strip():
                 self.dream_ready.emit(text)
-        threading.Thread(target=work, daemon=True, name="mochi-dream").start()
+        threading.Thread(target=work, daemon=True, name="star-dream").start()
 
     @Slot()
     def consolidate(self) -> None:
@@ -160,7 +160,7 @@ class AgentWorker(QObject):
                     audit.system("memory consolidated", merged=n)
             except Exception as exc:
                 audit.system("consolidate failed", error=repr(exc))
-        threading.Thread(target=work, daemon=True, name="mochi-consolidate").start()
+        threading.Thread(target=work, daemon=True, name="star-consolidate").start()
 
     @Slot(str)
     def peek_screen(self, trigger: str = "") -> None:
@@ -172,7 +172,7 @@ class AgentWorker(QObject):
                 reply = ""
             if reply and reply.strip():
                 self.proactive_reply.emit(reply)
-        threading.Thread(target=work, daemon=True, name="mochi-peek").start()
+        threading.Thread(target=work, daemon=True, name="star-peek").start()
 
     @Slot(str)
     def analyze_screen(self, focus: str) -> None:
@@ -183,7 +183,7 @@ class AgentWorker(QObject):
                 audit.system("analyze_screen failed", error=repr(exc))
                 reply = ""
             self.analysis_ready.emit(reply or "")
-        threading.Thread(target=work, daemon=True, name="mochi-watch").start()
+        threading.Thread(target=work, daemon=True, name="star-watch").start()
 
     @Slot(str)
     def rewrite(self, text: str) -> None:
@@ -194,7 +194,7 @@ class AgentWorker(QObject):
                 audit.system("rewrite failed", error=repr(exc))
                 out = ""
             self.rewrite_ready.emit(out)
-        threading.Thread(target=work, daemon=True, name="mochi-rewrite").start()
+        threading.Thread(target=work, daemon=True, name="star-rewrite").start()
 
     @Slot(str, str)
     def clip_alchemy(self, kind: str, text: str) -> None:
@@ -206,7 +206,7 @@ class AgentWorker(QObject):
                 out = ""
             if out and out.strip():
                 self.proactive_reply.emit(out)
-        threading.Thread(target=work, daemon=True, name="mochi-alchemy").start()
+        threading.Thread(target=work, daemon=True, name="star-alchemy").start()
 
     @Slot()
     def forget_all(self) -> None:

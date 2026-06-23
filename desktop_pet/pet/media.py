@@ -126,7 +126,7 @@ class MediaFrame(QWidget):
         suffix = Path(self._src_path).suffix or ".png"
         downloads = Path.home() / "Downloads"
         default_dir = downloads if downloads.is_dir() else Path.home()
-        default = default_dir / ("mochi_media" + suffix)
+        default = default_dir / ("star_media" + suffix)
         target, _ = QFileDialog.getSaveFileName(
             self, i18n.t("media_save_title"), str(default), i18n.t("media_save_filter").format(suffix=suffix)
         )

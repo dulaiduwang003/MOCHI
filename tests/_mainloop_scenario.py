@@ -13,7 +13,7 @@ import threading
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 os.environ["QT_QPA_PLATFORM"] = "offscreen"
-os.environ.setdefault("STAR_DATA_DIR", tempfile.mkdtemp(prefix="mochi_itest_"))
+os.environ.setdefault("STAR_DATA_DIR", tempfile.mkdtemp(prefix="star_itest_"))
 
 FAILS: list[str] = []
 

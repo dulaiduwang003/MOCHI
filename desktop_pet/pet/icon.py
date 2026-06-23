@@ -1,6 +1,6 @@
 # author: bdth
 # email: 2074055628@qq.com
-# qpainter矢量画mochi的脸 生成多尺寸应用图标
+# qpainter矢量画star的脸 生成多尺寸应用图标
 
 from __future__ import annotations
 
@@ -21,8 +21,8 @@ _BADGE_BOT = QColor(12, 12, 22)
 _VIOLET = QColor(167, 139, 250)
 _CYAN = QColor(34, 211, 238)
 _INK = QColor(34, 32, 46)
-_MOCHI_TOP = QColor(252, 252, 254)
-_MOCHI_BOT = QColor(226, 230, 240)
+_STAR_TOP = QColor(252, 252, 254)
+_STAR_BOT = QColor(226, 230, 240)
 _BLUSH = QColor(245, 170, 188, 120)
 
 
@@ -75,8 +75,8 @@ def render_face(painter: QPainter, size: float) -> None:
     bw, bh = s * 0.60, s * 0.52
     body = QRectF(cx - bw / 2, cy - bh / 2 + s * 0.02, bw, bh)  # 往下挪一点
     grad = QLinearGradient(0, body.top(), 0, body.bottom())
-    grad.setColorAt(0.0, _MOCHI_TOP)
-    grad.setColorAt(1.0, _MOCHI_BOT)
+    grad.setColorAt(0.0, _STAR_TOP)
+    grad.setColorAt(1.0, _STAR_BOT)
     painter.setBrush(grad)
     painter.drawRoundedRect(body, bh * 0.46, bh * 0.46)
 
@@ -130,7 +130,7 @@ def _face_pixmap(size: int) -> QPixmap:
 _ICON_CACHE: QIcon | None = None
 
 
-def mochi_icon() -> QIcon:
+def star_icon() -> QIcon:
     """共用应用图标 懒加载进程级缓存"""
     global _ICON_CACHE
     if _ICON_CACHE is None:
@@ -141,7 +141,7 @@ def mochi_icon() -> QIcon:
     return _ICON_CACHE
 
 
-def save_ico(path: str = "mochi.ico", sizes: tuple[int, ...] = (16, 24, 32, 48, 64, 128, 256)) -> str:
+def save_ico(path: str = "star.ico", sizes: tuple[int, ...] = (16, 24, 32, 48, 64, 128, 256)) -> str:
     """导出打包用的ico文件"""
     import io
 

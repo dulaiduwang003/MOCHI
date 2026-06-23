@@ -62,7 +62,7 @@ exe = EXE(
     a.scripts,
     [],
     exclude_binaries=True,
-    name="Mochi",
+    name="Star",
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,
@@ -73,7 +73,7 @@ exe = EXE(
     target_arch=None,
     codesign_identity=None,
     entitlements_file=None,
-    icon="mochi.ico",  # 图标由build.ps1生成
+    icon="star.ico",  # 图标由build.ps1生成
 )
 
 coll = COLLECT(
@@ -83,5 +83,5 @@ coll = COLLECT(
     strip=False,
     upx=False,
     upx_exclude=[],
-    name="Mochi",
+    name="Star",
 )

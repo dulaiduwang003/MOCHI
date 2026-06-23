@@ -1,12 +1,12 @@
-﻿; mochi安装程序脚本 把dist\Mochi打成MochiSetup.exe 先跑build.ps1
+﻿; star安装程序脚本 把dist\Star打成StarSetup.exe 先跑build.ps1
 
-#define MyAppName "墨池 Mochi"
+#define MyAppName "斯塔 Star"
 ; 版本号由build.ps1传入 这里是手动编译的兜底
 #ifndef MyAppVersion
   #define MyAppVersion "0.1.0"
 #endif
 #define MyAppPublisher "bdth"
-#define MyAppExeName "Mochi.exe"
+#define MyAppExeName "Star.exe"
 
 [Setup]
 ; appid固定不要改
@@ -16,14 +16,14 @@ AppVersion={#MyAppVersion}
 AppVerName={#MyAppName} {#MyAppVersion}
 AppPublisher={#MyAppPublisher}
 ; 默认装用户目录免UAC
-DefaultDirName={autopf}\Mochi
-DefaultGroupName=Mochi
+DefaultDirName={autopf}\Star
+DefaultGroupName=Star
 DisableDirPage=no
 DisableProgramGroupPage=yes
 AllowNoIcons=yes
 OutputDir=dist
-OutputBaseFilename=MochiSetup
-SetupIconFile=mochi.ico
+OutputBaseFilename=StarSetup
+SetupIconFile=star.ico
 UninstallDisplayIcon={app}\{#MyAppExeName}
 UninstallDisplayName={#MyAppName}
 Compression=lzma2
@@ -40,11 +40,11 @@ Name: "en"; MessagesFile: "compiler:Default.isl"
 
 [Tasks]
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"
-Name: "startup"; Description: "Start Mochi automatically when I sign in (开机自启)"; GroupDescription: "Startup:"; Flags: unchecked
+Name: "startup"; Description: "Start Star automatically when I sign in (开机自启)"; GroupDescription: "Startup:"; Flags: unchecked
 
 [Files]
 ; 整个pyinstaller目录一起装
-Source: "dist\Mochi\*"; DestDir: "{app}"; Flags: recursesubdirs createallsubdirs ignoreversion
+Source: "dist\Star\*"; DestDir: "{app}"; Flags: recursesubdirs createallsubdirs ignoreversion
 
 [Icons]
 Name: "{group}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"

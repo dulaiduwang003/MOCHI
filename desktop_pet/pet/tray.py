@@ -11,7 +11,7 @@ from PySide6.QtGui import QAction
 from PySide6.QtWidgets import QMenu, QSystemTrayIcon
 
 from desktop_pet import i18n
-from desktop_pet.pet.icon import mochi_icon
+from desktop_pet.pet.icon import star_icon
 
 # 表演子菜单 名字对应小品或反应
 _PERFORM_ITEMS = (
@@ -69,7 +69,7 @@ class Tray(QSystemTrayIcon):
         on_ball: Callable[[], None] | None = None,
         on_perform: Callable[[str], None] | None = None,
     ) -> None:
-        super().__init__(mochi_icon())
+        super().__init__(star_icon())
         self.setToolTip(i18n.t("tray_tooltip"))
         self._on_open_panel = on_open_panel
         self._is_shown = is_shown
@@ -121,7 +121,7 @@ class Tray(QSystemTrayIcon):
         """托盘气泡通知 不支持就静默"""
         try:
             if QSystemTrayIcon.supportsMessages():
-                self.showMessage(title, body, mochi_icon(), msecs)
+                self.showMessage(title, body, star_icon(), msecs)
         except Exception:
             pass
 

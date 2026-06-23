@@ -62,7 +62,7 @@ def _ensure_thread() -> None:
         return
     with _thread_lock:
         if _thread is None or not _thread.is_alive():
-            t = threading.Thread(target=_pump, name="mochi-uia", daemon=True)
+            t = threading.Thread(target=_pump, name="star-uia", daemon=True)
             t.start()
             _thread = t
 

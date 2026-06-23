@@ -72,7 +72,7 @@ def _default_data_dir() -> Path:
         return Path(override)
     if getattr(_sys, "frozen", False):
         base = _os.environ.get("APPDATA") or str(Path.home())
-        return Path(base) / "Mochi"
+        return Path(base) / "Star"
     return Path(__file__).resolve().parent.parent / "data"
 
 
@@ -131,7 +131,7 @@ class Settings:
     hotkey_ask: str = "ctrl+alt+a"
     hotkey_quick: str = "ctrl+shift+q"
     hear_enabled: bool = False     # 听觉总开关 按住热键说话
-    wake_enabled: bool = False     # 唤醒词"墨池" 麦克风常开
+    wake_enabled: bool = False     # 唤醒词"斯塔" 麦克风常开
     hotkey_talk: str = "alt+v"     # 按住说话
 
     @classmethod

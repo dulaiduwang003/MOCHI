@@ -11,7 +11,7 @@ import threading
 import time
 import types
 
-os.environ.setdefault("STAR_DATA_DIR", tempfile.mkdtemp(prefix="mochi_par_"))
+os.environ.setdefault("STAR_DATA_DIR", tempfile.mkdtemp(prefix="star_par_"))
 
 from desktop_pet.agent import tools  # noqa: E402
 from desktop_pet.agent.loop import Agent  # noqa: E402

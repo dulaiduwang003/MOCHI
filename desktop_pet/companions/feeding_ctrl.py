@@ -81,7 +81,7 @@ class FeedingCtrl(QObject):
             return
         # total_size 会 os.walk 最多两万个文件 在 ui 线程做会冻住 丢后台量完回主线程决定
         self._sizing = True
-        threading.Thread(target=self._size_then_decide, args=(paths,), daemon=True, name="mochi-feed-size").start()
+        threading.Thread(target=self._size_then_decide, args=(paths,), daemon=True, name="star-feed-size").start()
 
     def _size_then_decide(self, paths: list) -> None:
         total, truncated = feeding.total_size(paths)
@@ -139,7 +139,7 @@ class FeedingCtrl(QObject):
             if err and not err.startswith(("path not found", "no valid path")):
                 name, who = feeding.diagnose_lock(paths)  # 真锁住才诊断谁锁的
             self._feed_result.emit((err, name, who, paths, total))
-        threading.Thread(target=work, daemon=True, name="mochi-feed-eat").start()
+        threading.Thread(target=work, daemon=True, name="star-feed-eat").start()
 
     @Slot(object)
     def _on_feed_result(self, data: object) -> None:

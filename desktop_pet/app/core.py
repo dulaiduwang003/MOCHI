@@ -80,8 +80,8 @@ class PetApp(QuickActionsMixin, VoiceMixin, AgentBridgeMixin,
         self._app.setQuitOnLastWindowClosed(False)
         from desktop_pet.pet.fx import smooth_font
         self._app.setFont(smooth_font(QFont("Microsoft YaHei UI", 10)))
-        from desktop_pet.pet.icon import mochi_icon
-        self._app.setWindowIcon(mochi_icon())
+        from desktop_pet.pet.icon import star_icon
+        self._app.setWindowIcon(star_icon())
         super().__init__()
 
         self._busy = False

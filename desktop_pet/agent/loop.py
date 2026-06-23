@@ -181,7 +181,7 @@ class Agent(HistoryMixin, ToolHandlersMixin, SubagentsMixin, DutiesMixin):
 
     def cancel(self) -> None:
         self._cancel.set()
-        threading.Thread(target=self._teardown_io, daemon=True, name="mochi-cancel-io").start()
+        threading.Thread(target=self._teardown_io, daemon=True, name="star-cancel-io").start()
 
     def _teardown_io(self) -> None:
         try:
@@ -635,7 +635,7 @@ class Agent(HistoryMixin, ToolHandlersMixin, SubagentsMixin, DutiesMixin):
             params["stream_options"] = {"include_usage": True}
         if not self._strip_cache_key:
             # 稳定key帮服务端同前缀请求路由到同一缓存 提命中率
-            params["prompt_cache_key"] = f"mochi-d{self._depth}"
+            params["prompt_cache_key"] = f"star-d{self._depth}"
         try:
             stream = self._create_stream(params)
         except BadRequestError as exc:

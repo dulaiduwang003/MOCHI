@@ -60,7 +60,7 @@ class _FakeKws:
     def get_result(self, s):
         if not self.fired and s.chunks >= self.hit_after:
             self.fired = True
-            return "墨池"
+            return "斯塔"
         return ""
 
     def reset_stream(self, s):
