@@ -20,7 +20,6 @@ from desktop_pet.app.qtenv import _install_qt_message_filter, _light_palette
 from desktop_pet.app.quick_actions import QuickActionsMixin
 from desktop_pet.app.voice import VoiceMixin
 from desktop_pet.app.worker import AgentWorker
-from desktop_pet.clipsampler import sampler
 from desktop_pet.companions.dreams import Dreams
 from desktop_pet.companions.feeding_ctrl import FeedingCtrl
 from desktop_pet.companions.playtime import Playtime
@@ -56,14 +55,12 @@ class PetApp(QuickActionsMixin, VoiceMixin, AgentBridgeMixin,
     request_timed_task = Signal(str)
     request_proactive = Signal(str, str)
     request_explore = Signal(str)
-    request_peek = Signal(str)
     request_analyze = Signal(str)
     request_dream = Signal()
     request_consolidate = Signal()
     request_message = Signal(str)
     request_confirm = Signal(str)
     request_rewrite = Signal(str)
-    request_clip_alchemy = Signal(str, str)
     request_new_topic = Signal()    # 换话题 重置改走队列进 worker 线程 别在 UI 线程直接动 agent 消息历史
     request_forget_all = Signal()
     _hear_partial = Signal(str)
@@ -91,7 +88,6 @@ class PetApp(QuickActionsMixin, VoiceMixin, AgentBridgeMixin,
         self._relang = False
         self._relang_intro = None
         self._fired_occasions: set[str] = set()
-        self._last_peek: datetime | None = None
         self._watch_inflight = False
         self._cancelling = False
         self._pending_quit = False
@@ -155,7 +151,6 @@ class PetApp(QuickActionsMixin, VoiceMixin, AgentBridgeMixin,
         self._watch_timer = QTimer(self)
         self._watch_timer.timeout.connect(self._check_watch)
         self._meeting_mode = False
-        self._shot_last = 0.0
         self._just_returned = False
 
         self._feeding = FeedingCtrl(self)
@@ -239,7 +234,6 @@ class PetApp(QuickActionsMixin, VoiceMixin, AgentBridgeMixin,
         self.request_timed_task.connect(self._worker.run_timed_task)
         self.request_proactive.connect(self._worker.speak_spontaneously)
         self.request_explore.connect(self._worker.explore)
-        self.request_peek.connect(self._worker.peek_screen)
         self.request_dream.connect(self._worker.make_dream)
         self.request_consolidate.connect(self._worker.consolidate)
         self._worker.dream_ready.connect(self._dreams.set_dream)
@@ -256,10 +250,6 @@ class PetApp(QuickActionsMixin, VoiceMixin, AgentBridgeMixin,
         self.request_new_topic.connect(self._worker.new_topic)
         self.request_forget_all.connect(self._worker.forget_all)
         self._worker.rewrite_ready.connect(self._on_rewrite_done)
-        self._app.clipboard().dataChanged.connect(self._on_clipboard_changed)
-        sampler.interesting.connect(self._on_clip_interesting)
-        self.request_clip_alchemy.connect(self._worker.clip_alchemy)
-        sampler.set_enabled(self._settings.clip_sampler or self._settings.clip_alchemy)
 
     def _cancel_active_task(self, *, notify: bool = True) -> bool:
         """停掉正在跑的任务和发言 返回是否确实停了"""

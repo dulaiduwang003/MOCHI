@@ -120,14 +120,9 @@ class Playtime(QObject):
             return
         catch = ""
         try:
-            treasures = self._host._watchers._clip_treasures
-            if treasures and random.random() < 0.5:
-                _k, text, _ts = random.choice(list(treasures))
-                catch = text.strip().replace("\n", " ")[:46]
-            else:
-                today_lines = [str(it.get("text", "")) for it in journal.recent(6)]
-                if today_lines:
-                    catch = random.choice(today_lines)[:46]
+            today_lines = [str(it.get("text", "")) for it in journal.recent(6)]
+            if today_lines:
+                catch = random.choice(today_lines)[:46]
         except Exception:
             pass
         if catch:

@@ -340,12 +340,6 @@ TOOLS = [
         [],
     ),
     _function(
-        "recall_clipboard",
-        "Recall the most recent INTERESTING thing the user copied (an error / foreign text / code / link), as noticed by the clipboard sense. Use when they refer to 'this error', 'what I just copied', etc. Returns nothing if the feature is off or nothing notable was copied.",
-        {},
-        [],
-    ),
-    _function(
         "write_clipboard",
         "Write text to the system clipboard (the user can then paste it).",
         {"text": {"type": "string", "description": "text to put on the clipboard"}},
@@ -601,7 +595,7 @@ TOOLS = [
 _CONCURRENT_SAFE = frozenset(
     {"http_request", "read_file", "list_dir", "run_shell", "run_python", "run_skill",
      "web_search", "web_fetch", "search_code", "glob_files", "recall_docs", "list_docs",
-     "system_memory", "read_process_memory", "recall_clipboard",
+     "system_memory", "read_process_memory",
      "review_diff", "run_tests", "check_shell",
      "install_package"}
 )
@@ -913,15 +907,6 @@ def _dispatch_impl(
         ))
     if name == "read_clipboard":
         return ToolResult(clipboard.read_clipboard())
-    if name == "recall_clipboard":
-        from desktop_pet.clipsampler import sampler
-        if not sampler.enabled:
-            return ToolResult("(clipboard sense is off — the user hasn't enabled it)")
-        latest = sampler.latest_interesting()
-        if not latest:
-            return ToolResult("(nothing notable copied recently)")
-        kind, body = latest
-        return ToolResult(f"Most recent copied ({kind}):\n{body[:2000]}")
     if name == "write_clipboard":
         return ToolResult(clipboard.write_clipboard(arguments["text"]))
     if name == "click":

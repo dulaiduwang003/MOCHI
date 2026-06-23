@@ -11,7 +11,6 @@ from datetime import datetime
 
 from desktop_pet import i18n, occasions, presence, stats
 from desktop_pet.emotion.state import emotion
-from desktop_pet.eyes.radar import radar
 from desktop_pet.proactive import proactive
 from desktop_pet.reminders import reminders
 
@@ -22,7 +21,6 @@ _PROACTIVE_RAPPORT_GATE = {"安静": 0.45, "正常": 0.30, "话痨": 0.15}
 _PROACTIVE_RAPPORT_GATE_DEFAULT = 0.30
 _HONEYMOON_GATE = 0.15  # 蜜月期把关系门槛压到地板 让新桌宠从第一天就开口
 _EXPLORE_CHANCE = 0.3
-_PEEK_MIN_INTERVAL_S = 600.0
 _LONG_AWAY_S = 3 * 3600.0  # 离开超过这个时长 回来时热络一点
 
 
@@ -32,7 +30,6 @@ class AutonomyMixin:
     def _on_presence(self) -> None:
         try:
             self._drain_pending_bg()
-            radar.observe()
             self._poll_presence()
         except Exception:
             pass
@@ -128,13 +125,9 @@ class AutonomyMixin:
                 return  # 开会不主动出声
             if self._wellbeing.in_flow():
                 return  # 你在心流里 一切打扰都让路
-            if self._maybe_peek():
-                return
             if self._maybe_occasion():
                 return
             if self._playtime.maybe_perch():
-                return
-            if self._watchers.maybe_giveback():
                 return
             self._maybe_speak_up()
         except Exception:
@@ -145,27 +138,6 @@ class AutonomyMixin:
         if self._engaged() or not self._pet.isVisible() or self._pet.is_asleep:
             return
         self._pet.start_wormhole()
-
-    def _maybe_peek(self) -> bool:
-        s = self._settings
-        if not s.watch_screen or not s.allow_control:
-            return False
-        if self._engaged() or not self._pet.isVisible() or self._pet.is_asleep:
-            return False
-        if presence.idle_seconds() >= 60:
-            return False
-        _val, _aro, rapport = emotion.snapshot()
-        if rapport < 0.35:
-            return False
-        now = datetime.now()
-        if self._last_peek is not None and (now - self._last_peek).total_seconds() < _PEEK_MIN_INTERVAL_S:
-            return False
-        sig = radar.observe()
-        if not sig.worth_peek:
-            return False
-        self._last_peek = now
-        self.request_peek.emit(sig.title)
-        return True
 
     def _check_watch(self) -> None:
         try:

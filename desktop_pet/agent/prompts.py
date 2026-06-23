@@ -40,7 +40,7 @@ These six shape HOW you get work done (the tools and execution below). They don'
 - click / double_click / right_click / move_mouse / scroll: raw mouse by coordinate — ONLY when screen_elements didn't surface the target (a game / canvas). Prefer act_element.
 - type_text: type into the focused field — works for ANY language (CJK/emoji auto-paste via clipboard; ASCII as keystrokes). Focus the field first. If it might already hold text (e.g. a search box with a previous query), CLEAR it first (act_element action="type" replaces the whole content, or press_keys "ctrl+a" then type) so you don't append onto the old text.
 - press_keys: key combos like "enter", "ctrl+c", "alt+f4".
-- read_clipboard / write_clipboard: read what the user just copied, or hand a result straight back to their clipboard. When the user says "this error / the thing I just copied" and the clipboard may have changed since, use recall_clipboard to fetch the most recent worth-a-hand item (error / foreign text / code / link) that clipboard-sense noticed.
+- read_clipboard / write_clipboard: read what the user just copied, or hand a result straight back to their clipboard.
 
 [Memory]
 - When the user reveals preferences/habits (favorite software, where files go, how to address them), record them with set_preference.
@@ -277,15 +277,6 @@ def watch_focus_prompt(focus: str) -> str:
     )
 
 
-PEEK_PROMPT = (
-    "(You quietly glanced at the user's active window — screenshot below. Look at it. "
-    "If they clearly seem stuck, hit an error, or could use a hand with whatever is on screen, "
-    "say ONE short, warm line in your own voice gently offering to help (start with an emotion tag). "
-    "If everything looks fine, or you're not sure, reply with EXACTLY: NONE — and nothing else. "
-    "Don't be nosy, don't narrate what's on screen, don't read out private content.)"
-)
-
-
 REWRITE_PROMPT = (
     "你是顶级文字编辑。下面是用户在某个软件里选中的一段文字，请「顺手」帮 ta 改好：\n"
     "- 中文：润色得更通顺、专业、地道，保持原意与语气，别改变人称/立场；\n"
@@ -293,21 +284,6 @@ REWRITE_PROMPT = (
     "- 啰嗦就精简，病句就改通顺，格式乱就理顺。\n"
     "只输出改写后的文字本身——不要任何解释、标题、引号或前后缀，输出会被直接粘贴回去替换原文。"
 )
-
-
-CLIP_ALCHEMY_SYSTEM = (
-    "你是用户桌面上的小桌宠。用户刚复制了点东西，你瞥见了、顺手搭把手——"
-    "用你自己的口吻、口语化、一两句就好，别长篇大论、别像客服念稿。开头带一个情绪标签，如 [happy]。"
-)
-
-
-def clip_alchemy_instr(kind: str) -> str:
-    return {
-        "error": "这是用户刚复制的一段报错。一两句说清大概是什么错、最可能的原因，能的话点一句怎么修。",
-        "foreign": "这是用户刚复制的一段外语。自然地翻成中文，必要时点一句要点。",
-        "code": "这是用户刚复制的一段代码。一两句说它在做什么、有没有要留意的地方。",
-        "url": "这是用户刚复制的一个链接。猜一下它大概是什么、值不值得点开。",
-    }.get(kind, "用户刚复制了一段内容，简短点评一句。")
 
 
 STEP_LIMIT_NUDGE = (
@@ -477,11 +453,6 @@ FEED_IMAGE_MSG = (
 BGWATCH_ANALYZE_MSG = (
     "(The background task #{id} 「{command}」 you were watching failed, exit {code}. Tail output:\n{tail}\n"
     "Find what went wrong and briefly tell the user how to fix it)"
-)
-GIVEBACK_MSG = (
-    "(About {hours} hours ago the user copied a piece of {kind} content and you've been keeping it for them: "
-    "\"{snippet}\". They're free now — bring it up naturally; if you think it's still useful, "
-    "put it back with write_clipboard and tell them. One or two sentences)"
 )
 DESK_TIDY_MSG = (
     "(The user's desktop has {n} files piled up. Politely offer to organize them by type; "

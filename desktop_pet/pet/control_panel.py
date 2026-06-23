@@ -419,14 +419,6 @@ class ControlPanel(QDialog):
         self._allow_web.setChecked(settings.allow_web)
         self._allow_control.setChecked(settings.allow_control)
         self._allow_shell.setChecked(settings.allow_shell)
-        self._watch = QCheckBox(self._t("cb_watch"))
-        self._watch.setChecked(settings.watch_screen)
-        self._clip_sampler = QCheckBox(self._t("cb_clip_sampler"))
-        self._clip_sampler.setChecked(settings.clip_sampler)
-        self._clip_sampler.setCursor(Qt.CursorShape.PointingHandCursor)
-        self._clip_alchemy = QCheckBox(self._t("cb_clip_alchemy"))
-        self._clip_alchemy.setChecked(settings.clip_alchemy)
-        self._clip_alchemy.setCursor(Qt.CursorShape.PointingHandCursor)
         self._temperature = QSlider(Qt.Orientation.Horizontal)
         self._temperature.setRange(0, 200)
         self._temperature.setValue(int(round(settings.temperature * 100)))
@@ -868,9 +860,6 @@ class ControlPanel(QDialog):
         body.addWidget(self._check_field(self._allow_web, "help_web"))
         body.addWidget(self._check_field(self._allow_control, "help_control"))
         body.addWidget(self._check_field(self._allow_shell, "help_shell"))
-        body.addWidget(self._check_field(self._watch, "help_watch"))
-        body.addWidget(self._check_field(self._clip_sampler, "help_clip_sampler"))
-        body.addWidget(self._check_field(self._clip_alchemy, "help_clip_alchemy"))
         body.addWidget(self._build_gui_model_block())
         body.addStretch(1)
         return page
@@ -1144,9 +1133,6 @@ class ControlPanel(QDialog):
         s.allow_web = self._allow_web.isChecked()
         s.allow_control = self._allow_control.isChecked()
         s.allow_shell = self._allow_shell.isChecked()
-        s.watch_screen = self._watch.isChecked()
-        s.clip_sampler = self._clip_sampler.isChecked()
-        s.clip_alchemy = self._clip_alchemy.isChecked()
         # 多段只取第一段当热键 录空保留原值
         s.hotkey_summon = self._hk_summon.keySequence().toString().split(",")[0].strip() or s.hotkey_summon
         s.hotkey_ask = self._hk_ask.keySequence().toString().split(",")[0].strip() or s.hotkey_ask

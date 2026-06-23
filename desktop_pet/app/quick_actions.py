@@ -4,17 +4,9 @@
 
 from __future__ import annotations
 
-import time
-from datetime import datetime
-
 from PySide6.QtCore import QTimer
 
 from desktop_pet import i18n
-from desktop_pet.clipsampler import sampler
-
-
-_SHOT_COOLDOWN_S = 300.0
-_ALCHEMY_MIN_INTERVAL_S = 45.0
 
 
 class QuickActionsMixin:
@@ -89,7 +81,6 @@ class QuickActionsMixin:
         if not result.strip():
             self._thought.pop(i18n.t("quick_failed"), self._pet)
             return
-        sampler.mark_self_write(result)
         self._app.clipboard().setText(result)
         if self._settings.quick_paste_back:
             try:
@@ -98,37 +89,3 @@ class QuickActionsMixin:
             except Exception:
                 pass
         self._thought.pop(i18n.t("quick_done"), self._pet)
-
-    def _on_clipboard_changed(self) -> None:
-        try:
-            cb = self._app.clipboard()
-            # 剪贴板进了图多半是刚截图 凑过来搭把手
-            if cb.mimeData().hasImage() and not cb.mimeData().hasText():
-                now = time.time()
-                if now - self._shot_last > _SHOT_COOLDOWN_S and not self._worker.is_running:
-                    self._shot_last = now
-                    self._pet.react("peek")
-                    self._feed_pop(i18n.t("shot_offer"))
-                return
-            sampler.feed(cb.text())
-        except Exception:
-            pass
-
-    def _on_clip_interesting(self, kind: str, text: str) -> None:
-        # 顺手收藏一份留着回赠 只进内存不落盘 胸前吊牌跟着变
-        self._watchers.add_treasure(kind, text)
-        s = self._settings
-        if not s.clip_alchemy:
-            return
-        allowed = {k.strip() for k in (s.clip_alchemy_kinds or "").split(",") if k.strip()}
-        if allowed and kind not in allowed:
-            return
-        if (self._worker.is_running or self._busy or self._lecturing or self._speech.is_speaking
-                or self._input.isVisible() or not self._pet.isVisible() or self._pet.is_asleep):
-            return
-        now = datetime.now()
-        last = getattr(self, "_last_alchemy", None)
-        if last is not None and (now - last).total_seconds() < _ALCHEMY_MIN_INTERVAL_S:
-            return
-        self._last_alchemy = now
-        self.request_clip_alchemy.emit(kind, text)

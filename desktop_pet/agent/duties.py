@@ -1,6 +1,6 @@
 # author: bdth
 # email: 2074055628@qq.com
-# 差事mixin 提醒 主动说话 改写 做梦 偷瞄屏幕 反思沉淀
+# 差事mixin 提醒 主动说话 改写 做梦 反思沉淀
 
 from __future__ import annotations
 
@@ -117,25 +117,6 @@ class DutiesMixin:
             return ""
         return _strip_think_leak(content)
 
-    def transform_clipboard(self, kind: str, text: str) -> str:
-        """按kind改写剪贴板文本"""
-        text = (text or "").strip()
-        if not text:
-            return ""
-        messages = [
-            {"role": "system", "content": prompts.CLIP_ALCHEMY_SYSTEM},
-            {"role": "user", "content": f"{prompts.clip_alchemy_instr(kind)}\n\n内容：\n{text[:4000]}"},
-        ]
-        try:
-            resp = self._client().chat.completions.create(
-                model=self._settings.model, messages=messages, timeout=_BACKGROUND_TIMEOUT
-            )
-            self._meter_response(resp)
-            content = (resp.choices[0].message.content or "").strip()
-        except Exception:
-            return ""
-        return _strip_think_leak(content)
-
     def dream(self) -> str:
         """睡着时把高显著记忆碎片揉成一个梦 材料不够或失败返回空串"""
         frags = store.core_memories(3)
@@ -192,37 +173,6 @@ class DutiesMixin:
             return ""
         finally:
             worker.close()
-
-    def peek_screen(self, trigger: str = "") -> str:
-        """偷瞄屏幕主动搭话 没事回空串"""
-        from desktop_pet.eyes import capture
-        from desktop_pet.settings import CAPTURE_WINDOW
-        try:
-            cap = capture.capture_screen(CAPTURE_WINDOW)
-        except Exception:
-            return ""
-        if not cap.png_bytes:
-            return ""
-        prompt = prompts.PEEK_PROMPT
-        if trigger.strip():
-            prompt = f"（卡住雷达注意到前台窗口「{trigger.strip()[:80]}」可能有问题——重点看看是不是报错/卡住。）\n" + prompt
-        content = [
-            {"type": "text", "text": self._turn_context() + "\n\n" + prompt},
-            {"type": "image_url", "image_url": {"url": capture.to_data_url(cap.png_bytes)}},
-        ]
-        messages = [self._system_message(), {"role": "user", "content": content}]
-        try:
-            resp = self._client().chat.completions.create(
-                model=self._settings.model, messages=messages, timeout=_BACKGROUND_TIMEOUT
-            )
-            self._meter_response(resp)
-            text = _strip_think_leak((resp.choices[0].message.content or "").strip())
-        except Exception:
-            return ""
-        if not text or text.strip().upper().lstrip("[").startswith("NONE"):  # 容忍NONE裹在情绪标签里
-            return ""
-        audit.reply(text, proactive=True)
-        return text
 
     def analyze_screen(self, focus: str) -> str:
         """定时盯屏单次执行 截屏问模型"""

@@ -51,7 +51,7 @@ _WEB_TOOLS = frozenset({"web_search", "web_fetch", "http_request", "install_pack
 _CONTROL_TOOLS = frozenset({
     "screenshot", "screen_elements", "act_element", "list_windows", "focus_window", "manage_window",
     "click", "double_click", "right_click", "move_mouse", "scroll", "type_text", "press_keys",
-    "read_clipboard", "write_clipboard", "read_process_memory", "recall_clipboard",
+    "read_clipboard", "write_clipboard", "read_process_memory",
     _WATCH_TOOL,
 })
 _SHELL_TOOLS = frozenset({
@@ -75,7 +75,7 @@ _HISTORY_TOKEN_BUDGET = 24_000
 _PARALLEL_SAFE = frozenset({
     "read_file", "list_dir", "search_code", "glob_files",
     "web_search", "web_fetch",
-    "recall_docs", "list_docs", "recall_clipboard", "review_diff",
+    "recall_docs", "list_docs", "review_diff",
 })
 _MAX_PARALLEL_TOOLS = 6
 _STUCK_LIMIT = 3  # 同名同参连续失败这么多次 回灌一句别原地打转换思路

@@ -87,7 +87,6 @@ Star acts on your machine with **the same privileges you have** — running arbi
 | **Time Together** | It quietly remembers the date you first met and the cumulative interaction count — so it knows "how many days we've known each other" |
 | **Talking First** | Occasionally speaks up on its own when idle, yet **with restraint** — long cooldowns, a daily cap, and rapport gating mean it never spams |
 | **Structured Expression** | It draws comparisons / lists / code on a little blackboard beside it to explain things; multi-step tasks get a **persistent task-list panel** (independent of the blackboard, never wiped by reply content); it can also display images / GIFs |
-| **Screen Helper & Clipboard** | Optional: while idle it occasionally glances at your screen and offers help if you seem stuck; it recognizes when you copy an error / foreign text / code and helps explain / translate on the spot ("Clipboard Alchemy") |
 | **Machine Mimicry** | It senses the machine's state and its body follows: fans itself when the CPU runs hot, gets squished when RAM is maxed, warns you on low battery, tucks under a blanket and yawns late at night, snuggles up to a warm machine in winter; when the machine truly goes idle it pulls out a yarn ball to play |
 | **Weather Mimicry** | Quietly checks the weather every two hours: umbrella in the rain, curls up in the snow, melting in a heatwave — whatever it's like outside is what it's like on it |
 | **Meeting-Aware** | Detects when the mic is in use (a call / meeting) and slips into a quiet mode so it won't bother you, popping back up once the meeting ends |
@@ -95,7 +94,7 @@ Star acts on your machine with **the same privileges you have** — running arbi
 | **Garbage Bugs** | When temp files pile past 500MB, a little garbage bug crawls out beside it — squish it, and it **actually** clears that junk and frees up space |
 | **Feeding** | Drag files onto it: junk gets eaten (into the Recycle Bin), documents are swallowed into the knowledge base, images get a glance; protected / risky paths are dodged, not eaten |
 | **Rituals** | A "mood forecast" on your first meeting each day; an anniversary cake at 7 / 30 / 100 / 365 days together (tap to blow out the candles); a goodbye wave at exit; a 25-minute Pomodoro focus session with you |
-| **Thoughtful Watching** | It keeps an eye on background commands for you — celebrating on success, analyzing on failure on its own; it quietly stashes little things from your clipboard and fondly "gives them back" hours later; it also pipes up when a download finishes or your desktop gets too cluttered |
+| **Thoughtful Watching** | It keeps an eye on background commands for you — celebrating on success, analyzing on failure on its own; it also pipes up when a download finishes or your desktop gets too cluttered |
 
 ### ⌨️ Handy Interaction
 
@@ -135,7 +134,6 @@ desktop_pet/
 ├─ docs.py · reminders.py · proactive.py · journal.py · presence.py
 ├─ occasions.py      # Holiday / birthday awareness: hands the model a fitting "hook" on special days
 ├─ stats.py          # Lightweight companionship stats: first-met time + cumulative interactions
-├─ clipsampler.py · clipclass.py   # Clipboard-alchemy backend: sampling + local classification (error/foreign-language/code/link) + dedup & throttle
 ├─ watcher.py        # Scheduled screen-watching (session-level, e.g. watch your game)
 ├─ usage.py          # Token usage metering: cumulative input / output / cache hits, persisted per day
 ├─ updater.py        # Version update check: queries the latest GitHub release and compares with local
@@ -227,7 +225,7 @@ A continuous valence / arousal mood + slowly accumulating rapport, persisted to 
   - `playtime.py`: play & physical feedback — throw/catch ball, windowsill perch (tumbles when the window moves), tickle / drag-throw grudge, **ink footprints** while walking, a fishing-catch easter egg; scans temp and spawns a **garbage bug** past 500MB, squishing it triggers a real cleanup.
   - `rituals.py`: **rituals** — morning mood forecast, anniversary cake (blow out candles), a goodbye wave at exit, a 25-minute Pomodoro focus.
   - `feeding_ctrl.py` + `pet/feeding.py`: **feeding routing** — dropped files routed by type (junk → Recycle Bin, docs → knowledge base, images → a glance), protected / risky paths blocked, big meals / whole directories confirmed first.
-  - `watchers.py`: **background watching** — watches background shells started by `start_background_task`, celebrating success and calling the agent to analyze failures; quietly stashes clipboard treasures and fondly "gives them back" hours later.
+  - `watchers.py`: **background watching** — watches background shells started by `start_background_task`, celebrating success and calling the agent to analyze failures.
 - **Body sensations (somatic.py)**: things that happen to it (being fed / tossed / catching a ball / the cake coming out), together with ongoing states ("in a meeting," "machine running hot"), are gathered into one "body status" note injected into every turn's context — so when it chats it **actually knows what just happened to it**, instead of faking it.
 - **MCP / hotkeys / skills / audit / i18n**: MCP connectors blend into the tool table as `mcp__{server}__{tool}`; global hotkeys run a Win32 message loop on a dedicated thread (summon / ask selection / quick rewrite); skills save working code as reusable items injected into the prompt; all tool calls are written to an audit log; the control panel UI supports Chinese / English / Japanese.
 

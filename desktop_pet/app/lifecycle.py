@@ -11,10 +11,8 @@ from PySide6.QtCore import QPoint, QTimer
 from PySide6.QtGui import QCursor
 
 from desktop_pet import hearing, i18n, journal, persona, stats
-from desktop_pet.clipsampler import sampler
 from desktop_pet.docs import docs
 from desktop_pet.emotion.state import emotion
-from desktop_pet.eyes.radar import radar
 from desktop_pet.mcp_hub import mcp_hub
 from desktop_pet.memory.store import store
 from desktop_pet.pet import feeding
@@ -183,7 +181,6 @@ class LifecycleMixin:
         self._requeue_timed()
         self._on_busy(False)
         self._pet.clear_pending()
-        radar.reset()
         self._pet.setVisible(False)
 
     def _open_panel(self) -> None:
@@ -235,7 +232,6 @@ class LifecycleMixin:
         self._tray.retranslate()
         hearing.set_enabled(self._settings.hear_enabled)
         hearing.set_wake_enabled(self._settings.hear_enabled and self._settings.wake_enabled)
-        sampler.set_enabled(self._settings.clip_sampler or self._settings.clip_alchemy)
         try:
             self._sensors._check_weather()  # 天气开关切换后立即生效 不必等2小时
         except Exception:

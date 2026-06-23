@@ -122,10 +122,6 @@ class Settings:
     proactive_level: str = "正常"
     ui_language: str = "中文"
     weather_enabled: bool = False  # 天气拟态默认关 ip定位常离谱
-    watch_screen: bool = False
-    clip_sampler: bool = False
-    clip_alchemy: bool = False
-    clip_alchemy_kinds: str = "error,foreign,code"
     quick_paste_back: bool = True
     hotkey_summon: str = "ctrl+alt+s"
     hotkey_ask: str = "ctrl+alt+a"

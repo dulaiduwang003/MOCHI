@@ -163,18 +163,6 @@ class AgentWorker(QObject):
         threading.Thread(target=work, daemon=True, name="star-consolidate").start()
 
     @Slot(str)
-    def peek_screen(self, trigger: str = "") -> None:
-        def work() -> None:
-            try:
-                reply = self._agent.peek_screen(trigger)
-            except Exception as exc:
-                audit.system("peek_screen failed", error=repr(exc))
-                reply = ""
-            if reply and reply.strip():
-                self.proactive_reply.emit(reply)
-        threading.Thread(target=work, daemon=True, name="star-peek").start()
-
-    @Slot(str)
     def analyze_screen(self, focus: str) -> None:
         def work() -> None:
             try:
@@ -195,18 +183,6 @@ class AgentWorker(QObject):
                 out = ""
             self.rewrite_ready.emit(out)
         threading.Thread(target=work, daemon=True, name="star-rewrite").start()
-
-    @Slot(str, str)
-    def clip_alchemy(self, kind: str, text: str) -> None:
-        def work() -> None:
-            try:
-                out = self._agent.transform_clipboard(kind, text)
-            except Exception as exc:
-                audit.system("clip_alchemy failed", error=repr(exc))
-                out = ""
-            if out and out.strip():
-                self.proactive_reply.emit(out)
-        threading.Thread(target=work, daemon=True, name="star-alchemy").start()
 
     @Slot()
     def forget_all(self) -> None:
