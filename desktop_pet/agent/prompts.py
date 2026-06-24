@@ -364,7 +364,6 @@ SOMA_GRUDGE = (
 )
 SOMA_CAKE_OUT = "today is day {days} since you met your owner; you brought out a cake and are waiting for them to blow the candles"
 SOMA_CAKE_BLOWN = "your owner blew out your anniversary cake candles; you made a wish (it involves them)"
-SOMA_BUG = "your owner squished the junk bug for you; {n} stale temp files cleaned ({size})"
 SOMA_BALL = "your owner threw a ball for you; you jumped up and caught it"
 SOMA_FOCUS_DONE = "you kept your owner company through a 25-minute focus session"
 SOMA_FOCUS_STATE = "your owner started a pomodoro and is focusing; you sit quietly beside them — don't chitchat proactively"
@@ -400,10 +399,6 @@ def consolidate_nudge(texts: list[str]) -> str:
 FEED_IMAGE_MSG = (
     "(The user fed you an image {name}, path {path}. Look at it with read_file, "
     "then share your thoughts or what you notice — keep it light)"
-)
-BGWATCH_ANALYZE_MSG = (
-    "(The background task #{id} 「{command}」 you were watching failed, exit {code}. Tail output:\n{tail}\n"
-    "Find what went wrong and briefly tell the user how to fix it)"
 )
 DESK_TIDY_MSG = (
     "(The user's desktop has {n} files piled up. Politely offer to organize them by type; "

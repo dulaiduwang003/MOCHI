@@ -274,14 +274,14 @@ class LifecycleMixin:
 
     def _do_quit(self) -> None:
         # 先掐死全部伴生轮询 退出过程不再孵新线程
-        for c in (self._sensors, self._playtime, self._watchers, self._rituals, self._feeding, self._wellbeing, self._dreams):
+        for c in (self._sensors, self._playtime, self._rituals, self._feeding, self._wellbeing, self._dreams):
             try:
                 c.stop()
             except Exception:
                 pass
         # farewell 挥手前停掉四个核心轮询并标记取消 否则它们还会往 worker 排活 第二趟 shutdown 杀进程时撞上在途子进程
         self._cancelling = True
-        for _t in (self._presence_timer, self._reminder_timer, self._proactive_timer,
+        for _t in (self._presence_timer, self._reminder_timer,
                    self._watch_timer):
             try:
                 _t.stop()

@@ -109,16 +109,6 @@ class AutonomyMixin:
         self._inflight_timed = None
         self._timed_inflight = False
 
-    def _check_proactive(self) -> None:
-        try:
-            if self._meeting_mode:
-                return  # 开会不打扰
-            if self._wellbeing.in_flow():
-                return  # 你在心流里 一切打扰都让路
-            self._playtime.maybe_perch()
-        except Exception:
-            pass
-
     def _on_wants_travel(self) -> None:
         """虫洞穿越前的全局闸门"""
         if self._engaged() or not self._pet.isVisible() or self._pet.is_asleep:

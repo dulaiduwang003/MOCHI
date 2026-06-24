@@ -56,7 +56,7 @@ _CONTROL_TOOLS = frozenset({
 })
 _SHELL_TOOLS = frozenset({
     "run_shell", "check_shell", "run_python", "run_skill", "create_skill", "edit_skill", "write_file", "edit_file",
-    "review_diff", "run_tests",
+    "review_diff", "run_tests", "tidy_junk",
 })
 # 真正会接管鼠标键盘去操作电脑的工具 执行期间弹浮层让用户知道 值是给用户看的动作名
 _INPUT_TOOL_HINT = {

@@ -5,67 +5,42 @@
 from __future__ import annotations
 
 import random
-import threading
-import time
 from datetime import datetime
 
-from PySide6.QtCore import QObject, QPoint, QTimer, Signal, Slot
+from PySide6.QtCore import QObject, QPoint, QTimer, Slot
 
-from desktop_pet import i18n, journal, occasions, presence, somatic, stats
+from desktop_pet import i18n, journal, occasions, somatic, stats
 from desktop_pet.agent import prompts as agent_prompts
 from desktop_pet.emotion.state import emotion
-from desktop_pet.pet import feeding
 from desktop_pet.pet.behavior import selector
-
-_AWAY_S = 150.0
-_BUG_SCAN_MS = 45 * 60 * 1000
-_BUG_TEMP_BYTES = 500 * 1024 * 1024  # temp堆到这么大就生虫
 
 
 class Playtime(QObject):
-    _bug_found = Signal(int)
-    _bug_cleaned = Signal(int, int)
 
     def __init__(self, host) -> None:
         super().__init__()
         self._host = host
-        self._bug_timer = QTimer(self)
-        self._bug_timer.timeout.connect(self._check_bugs)
-        self._bug = None
-        self._bug_scanning = False
-        self._bug_found.connect(self._on_bug_found)
-        self._bug_cleaned.connect(self._on_bug_cleaned)
         from desktop_pet.pet.footprints import FootprintLayer
         self._paws = FootprintLayer()
         self._paw_last = QPoint()
         self._host._pet.moved.connect(self._on_pet_moved_paws)
         self._ball = None  # 玩具球
         self._host._pet.bind_activity_done(self._on_activity_done)
-        self._perch_hwnd = 0
-        self._perch_timer = QTimer(self)
-        self._perch_timer.timeout.connect(self._check_perch)
-        self._perch_last = 0.0
         self._host._pet.tossed.connect(self._on_tossed)
         self._host._pet.tickled.connect(self._on_tickled)
 
     def start(self) -> None:
-        self._bug_timer.start(_BUG_SCAN_MS)
+        pass
 
     def stop(self) -> None:
-        """退出前停轮询关掉所有玩耍小窗"""
-        for t in (self._bug_timer, self._perch_timer):
+        """退出前关掉玩耍小窗"""
+        if self._ball is not None:
             try:
-                t.stop()
+                self._ball._timer.stop()
+                self._ball.close()
             except Exception:
                 pass
-        for w in (self._bug, self._ball):
-            if w is not None:
-                try:
-                    w._timer.stop()
-                    w.close()
-                except Exception:
-                    pass
-        self._bug = self._ball = None
+        self._ball = None
         try:
             self._paws._timer.stop()
             self._paws.hide()
@@ -156,133 +131,3 @@ class Playtime(QObject):
     def _on_ball_stopped(self) -> None:
         self._ball = None
         self._host._feed_react("peek")
-
-    def maybe_perch(self) -> bool:
-        """偶尔跳上前台窗口顶上待着 窗口一动摔下来"""
-        if self._host._meeting_mode or self._perch_hwnd:
-            return False
-        if self._host._engaged() or not self._host._pet.isVisible() or self._host._pet.is_asleep:
-            return False
-        now = time.time()
-        if now - self._perch_last < 7200 or random.random() > 0.15:
-            return False
-        try:
-            import win32gui
-            hwnd = win32gui.GetForegroundWindow()
-            if not hwnd or hwnd == int(self._host._pet.winId()):
-                return False
-            left, top, right, _bottom = win32gui.GetWindowRect(hwnd)
-            scr = self._host._app.primaryScreen().availableGeometry()
-            if right - left < 500 or top < scr.top() + self._host._pet.height() * 0.8:
-                return False
-            self._perch_last = now
-            self._perch_hwnd = hwnd
-            self._perch_rect = (left, top, right)
-            x = left + int((right - left) * 0.30) - self._host._pet.width() // 2
-            y = top - int(self._host._pet.height() * 0.72)
-            self._host._pet.move(x, y)
-            self._host._feed_react("peek")
-            self._host._feed_pop(i18n.t("perch_up"))
-            self._perch_timer.start(700)
-            QTimer.singleShot(180_000, self._perch_done)  # 最多蹲三分钟
-            return True
-        except Exception:
-            return False
-
-    def _check_perch(self) -> None:
-        """蹲守期间窗口动了就摔下来"""
-        if not self._perch_hwnd:
-            self._perch_timer.stop()
-            return
-        try:
-            import win32gui
-            if not win32gui.IsWindowVisible(self._perch_hwnd) or win32gui.IsIconic(self._perch_hwnd):
-                self._perch_fall()
-                return
-            left, top, right, _b = win32gui.GetWindowRect(self._perch_hwnd)
-            ol, ot, orr = self._perch_rect
-            if abs(left - ol) > 8 or abs(top - ot) > 8 or abs(right - orr) > 8:
-                self._perch_fall()
-        except Exception:
-            self._perch_done()
-
-    def _perch_fall(self) -> None:
-        """窗台塌了 摔下去气鼓鼓"""
-        self._perch_hwnd = 0
-        self._perch_timer.stop()
-        self._host._pet._start_toss(random.uniform(-120, 120), 60.0)
-        QTimer.singleShot(1400, lambda: self._host._feed_react("puff_up"))
-        QTimer.singleShot(1700, lambda: self._host._feed_pop(i18n.t("perch_fall")))
-
-    def _perch_done(self) -> None:
-        if not self._perch_hwnd:
-            return
-        self._perch_hwnd = 0
-        self._perch_timer.stop()
-        self._host._feed_react("stretch")
-
-    def _check_bugs(self) -> None:
-        """定时扫temp 垃圾堆大了生一只虫"""
-        if self._bug is not None or self._bug_scanning:
-            return
-        if self._host._engaged() or not self._host._pet.isVisible() or self._host._pet.is_asleep:
-            return
-        if presence.idle_seconds() >= _AWAY_S:
-            return
-        self._bug_scanning = True
-        threading.Thread(target=self._scan_temp_thread, daemon=True).start()
-
-    def _scan_temp_thread(self) -> None:
-        try:
-            size = feeding.temp_junk_size()
-            if size >= _BUG_TEMP_BYTES:
-                self._bug_found.emit(size)
-        finally:
-            self._bug_scanning = False
-
-    @Slot(int)
-    def _on_bug_found(self, size: int) -> None:
-        if self._bug is not None or not self._host._pet.isVisible():
-            return
-        from desktop_pet.pet.bug import BugWindow
-        from desktop_pet.eyes import capture
-        bug = BugWindow()
-        capture.register_own_window(int(bug.winId()))
-        bug.squished.connect(self._on_bug_squished)
-        bug.escaped.connect(self._on_bug_escaped)
-        geo = self._host._pet.frameGeometry()
-        screen = self._host._app.primaryScreen().availableGeometry()
-        side = 1 if geo.center().x() < screen.center().x() else -1
-        bug.spawn_near(geo.center().x() + side * (geo.width() // 2 + 70),
-                       min(geo.bottom() + 10, screen.bottom() - 80), screen)
-        self._bug = bug
-        self._host._feed_react("double_take")
-        self._host._feed_pop(i18n.t("bug_spotted").format(size=feeding.human_size(size)))
-
-    @Slot()
-    def _on_bug_squished(self) -> None:
-        self._bug = None
-        threading.Thread(target=self._clean_temp_thread, daemon=True).start()
-
-    def _clean_temp_thread(self) -> None:
-        try:
-            freed, count = feeding.clean_temp()
-            self._bug_cleaned.emit(freed, count)
-        except Exception:
-            self._bug_cleaned.emit(0, 0)
-
-    @Slot(int, int)
-    def _on_bug_cleaned(self, freed: int, count: int) -> None:
-        if count <= 0:
-            self._host._feed_pop(i18n.t("bug_nothing"))
-            return
-        stats.add_eaten(freed, 0)  # 算它吃的 但不算文件投喂数
-        emotion.apply("fed")
-        selector.set_emotion(*emotion.snapshot())
-        self._host._feed_react("celebrate")
-        somatic.note(agent_prompts.SOMA_BUG.format(n=count, size=feeding.human_size(freed)))
-        self._host._feed_pop(i18n.t("bug_squished_msg").format(n=count, size=feeding.human_size(freed)))
-
-    @Slot()
-    def _on_bug_escaped(self) -> None:
-        self._bug = None

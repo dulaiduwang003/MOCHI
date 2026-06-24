@@ -33,7 +33,7 @@
 
 Star is two things at once:
 
-- 🐾 **A desktop pet with a life of its own** — drawn entirely in code (no sprite assets whatsoever). It blinks, follows your cursor with its eyes, daydreams and hums, goes fishing and sips coffee, plays catch; it fans itself when the machine runs hot, puts up an umbrella in the rain, hunts down garbage bugs when junk piles up, eats files you drop on it, and brings out a cake on anniversaries. Ignore it and it finds its own fun; leave and it dozes off.
+- 🐾 **A desktop pet with a life of its own** — drawn entirely in code (no sprite assets whatsoever). It blinks, follows your cursor with its eyes, daydreams and hums, goes fishing and sips coffee, plays catch; it fans itself when the machine runs hot, puts up an umbrella in the rain, eats files you drop on it, and brings out a cake on anniversaries. Ignore it and it finds its own fun; leave and it dozes off.
 - 🧠 **A local Agent that can drive your whole computer** — plug in your own LLM (any OpenAI-compatible endpoint) and it can see the screen, click windows, move the mouse and keyboard, run commands, write code, read and write files, search the web, remember things, and look stuff up; it can also **watch your screen on a timer, run tests after it edits code, fan out a team of sub-agents in parallel, and remind you on a daily/weekly schedule**… turning "chatting with an AI" into "having the AI do it for you."
 
 It carries persistent **emotions and rapport**, and slowly grows a **self-portrait (personality evolution)** as you spend time together — so it's "the same one," not a chat box that resets every time.
@@ -89,11 +89,11 @@ Star acts on your machine with **the same privileges you have** — running arbi
 | **Machine Mimicry** | It senses the machine's state and its body follows: fans itself when the CPU runs hot, gets squished when RAM is maxed, warns you on low battery, tucks under a blanket and yawns late at night, snuggles up to a warm machine in winter; when the machine truly goes idle it pulls out a yarn ball to play |
 | **Weather Mimicry** | Quietly checks the weather every two hours: umbrella in the rain, curls up in the snow, melting in a heatwave — whatever it's like outside is what it's like on it |
 | **Meeting-Aware** | Detects when the mic is in use (a call / meeting) and slips into a quiet mode so it won't bother you, popping back up once the meeting ends |
-| **Playful Interaction** | Throw it a ball and it goes to catch it; once in a while it hides with just its tail-tip showing for you to find; it perches atop your foreground window (and tumbles off in a huff when the window moves); tickle it and it giggles; drag-and-drop it hard and it holds a grudge; in a good mood it leaves a trail of footprints as it walks (swapped for petals / snowflakes on holidays) |
-| **Garbage Bugs** | When temp files pile past 500MB, a little garbage bug crawls out beside it — squish it, and it **actually** clears that junk and frees up space |
+| **Playful Interaction** | Throw it a ball and it goes to catch it; once in a while it hides with just its tail-tip showing for you to find; tickle it and it giggles; drag-and-drop it hard and it holds a grudge; in a good mood it leaves a trail of footprints as it walks (swapped for petals / snowflakes on holidays) |
+| **Tidying Junk** | Have it run `tidy_junk` to clear stale temp files and free space (a real delete, only files older than 7 days) — it handles this itself, no auto-spawning bug |
 | **Feeding** | Drag files onto it: junk gets eaten (into the Recycle Bin), documents are swallowed into the knowledge base, images get a glance; protected / risky paths are dodged, not eaten |
 | **Rituals** | A "mood forecast" on your first meeting each day; an anniversary cake at 7 / 30 / 100 / 365 days together (tap to blow out the candles); a goodbye wave at exit; a 25-minute Pomodoro focus session with you |
-| **Thoughtful Watching** | It keeps an eye on background commands for you — celebrating on success, analyzing on failure on its own; it also pipes up when a download finishes or your desktop gets too cluttered |
+| **Thoughtful Watching** | It pipes up when a download finishes or your desktop gets too cluttered |
 
 ### ⌨️ Handy Interaction
 
@@ -119,10 +119,10 @@ desktop_pet/
 ├─ pet/              # The body: window, code-drawn character, speech/input, blackboard, task-list panel (todo_board),
 │                    #       control panel, confirm panel, hiding/entrance/wormhole teleport (wormhole), tray (tray),
 │                    #       window effects (fx), behavior selector & action library, props & palette;
-│                    #       toy ball (ball), garbage bug (bug), feeding (feeding), ink footprints (footprints),
+│                    #       toy ball (ball), feeding (feeding), ink footprints (footprints),
 │                    #       persistent-state adornments (adornments)
 ├─ companions/       # Companion-behavior package, one little machine per module: feeding routing (feeding_ctrl),
-│                    #       play & physics (playtime), rituals (rituals), environment sensors (sensors), background watching (watchers)
+│                    #       play & physics (playtime), rituals (rituals), environment sensors (sensors)
 ├─ emotion/          # Emotion state machine (VA + rapport) and emotion-tag tables
 ├─ somatic.py        # Body sensations: injects "what just happened to it" + ongoing states into each turn's context
 ├─ persona.py        # Self-portrait evolution layer (persona.json), injected into conversation context
@@ -220,10 +220,9 @@ A continuous valence / arousal mood + slowly accumulating rapport, persisted to 
 - **Holidays / companionship**: `occasions.py` recognizes Gregorian holidays + the birthday you set (used e.g. for seasonal footprint colors); `stats.py` quietly tracks first-meeting time and cumulative interactions — the basis for "how long we've known each other."
 - **Companion behaviors (companions/)**: five "little machines," each minding its own patch, all wrapped in presence / busy / rapport / cooldown gating —
   - `sensors.py`: reads CPU / RAM / battery vitals every 10s (with hysteresis, no jitter), driving **machine mimicry** (fan when hot, squished RAM, low battery, late-night blanket, winter snuggle); checks mic usage for **meeting-mute**; queries `wttr.in` every two hours for **weather mimicry**; watches the Downloads folder and desktop icon count; covers its eyes when the focused field is a password box.
-  - `playtime.py`: play & physical feedback — throw/catch ball, windowsill perch (tumbles when the window moves), tickle / drag-throw grudge, **ink footprints** while walking, a fishing-catch easter egg; scans temp and spawns a **garbage bug** past 500MB, squishing it triggers a real cleanup.
+  - `playtime.py`: play & physical feedback — throw/catch ball, tickle / drag-throw grudge, **ink footprints** while walking, a fishing-catch easter egg. Temp cleanup is now handled by the agent's `tidy_junk` tool.
   - `rituals.py`: **rituals** — morning mood forecast, anniversary cake (blow out candles), a goodbye wave at exit, a 25-minute Pomodoro focus.
   - `feeding_ctrl.py` + `pet/feeding.py`: **feeding routing** — dropped files routed by type (junk → Recycle Bin, docs → knowledge base, images → a glance), protected / risky paths blocked, big meals / whole directories confirmed first.
-  - `watchers.py`: **background watching** — watches background shells started by `start_background_task`, celebrating success and calling the agent to analyze failures.
 - **Body sensations (somatic.py)**: things that happen to it (being fed / tossed / catching a ball / the cake coming out), together with ongoing states ("in a meeting," "machine running hot"), are gathered into one "body status" note injected into every turn's context — so when it chats it **actually knows what just happened to it**, instead of faking it.
 - **MCP / hotkeys / skills / audit / i18n**: MCP connectors blend into the tool table as `mcp__{server}__{tool}`; global hotkeys run a Win32 message loop on a dedicated thread (summon / ask selection / quick rewrite); skills save working code as reusable items injected into the prompt; all tool calls are written to an audit log; the control panel UI supports Chinese / English / Japanese.
 

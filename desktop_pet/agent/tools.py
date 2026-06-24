@@ -345,6 +345,12 @@ TOOLS = [
         {"text": {"type": "string", "description": "text to put on the clipboard"}},
         ["text"],
     ),
+    _function(
+        "tidy_junk",
+        "Tidy up stale temp-file junk: delete temporary files older than 7 days to free disk space. No args. Returns how much was freed. Use when the user asks to clean up / free disk space, or you notice junk piling up.",
+        {},
+        [],
+    ),
     _function("click", "Left-click at a screen coordinate.", _XY, ["x", "y"]),
     _function("double_click", "Double-click (left) at a screen coordinate.", _XY, ["x", "y"]),
     _function("right_click", "Right-click at a screen coordinate.", _XY, ["x", "y"]),
@@ -909,6 +915,12 @@ def _dispatch_impl(
         return ToolResult(clipboard.read_clipboard())
     if name == "write_clipboard":
         return ToolResult(clipboard.write_clipboard(arguments["text"]))
+    if name == "tidy_junk":
+        from desktop_pet.pet import feeding
+        freed, count = feeding.clean_temp()
+        if count <= 0:
+            return ToolResult("Temp is already tidy — nothing old enough to clean.")
+        return ToolResult(f"Tidied up {count} stale temp files, freed {feeding.human_size(freed)}.")
     if name == "click":
         return ToolResult(mouse.click(arguments["x"], arguments["y"]))
     if name == "double_click":

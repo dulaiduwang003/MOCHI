@@ -25,7 +25,6 @@ from desktop_pet.companions.feeding_ctrl import FeedingCtrl
 from desktop_pet.companions.playtime import Playtime
 from desktop_pet.companions.rituals import Rituals
 from desktop_pet.companions.sensors import Sensors
-from desktop_pet.companions.watchers import Watchers
 from desktop_pet.companions.wellbeing import Wellbeing
 from desktop_pet.emotion.state import emotion
 from desktop_pet.hotkeys import GlobalHotkeys
@@ -44,7 +43,6 @@ from desktop_pet.settings import Settings
 
 _PRESENCE_POLL_MS = 12_000
 _REMINDER_POLL_MS = 15_000
-_PROACTIVE_POLL_MS = 60_000
 _WATCH_POLL_MS = 15_000
 
 
@@ -142,8 +140,6 @@ class PetApp(QuickActionsMixin, VoiceMixin, AgentBridgeMixin,
         self._presence_timer.timeout.connect(self._on_presence)
         self._reminder_timer = QTimer(self)
         self._reminder_timer.timeout.connect(self._check_reminders)
-        self._proactive_timer = QTimer(self)
-        self._proactive_timer.timeout.connect(self._check_proactive)
         self._watch_timer = QTimer(self)
         self._watch_timer.timeout.connect(self._check_watch)
         self._meeting_mode = False
@@ -151,7 +147,6 @@ class PetApp(QuickActionsMixin, VoiceMixin, AgentBridgeMixin,
         self._feeding = FeedingCtrl(self)
         self._sensors = Sensors(self)
         self._playtime = Playtime(self)
-        self._watchers = Watchers(self)
         self._rituals = Rituals(self)
         self._wellbeing = Wellbeing(self)
         self._dreams = Dreams(self)
@@ -322,12 +317,10 @@ class PetApp(QuickActionsMixin, VoiceMixin, AgentBridgeMixin,
         self._tray.show()
         self._presence_timer.start(_PRESENCE_POLL_MS)
         self._reminder_timer.start(_REMINDER_POLL_MS)
-        self._proactive_timer.start(_PROACTIVE_POLL_MS)
         self._watch_timer.start(_WATCH_POLL_MS)
         self._feeding.start()
         self._sensors.start()
         self._playtime.start()
-        self._watchers.start()
         self._rituals.start()
         self._wellbeing.start()
         self._dreams.start()
